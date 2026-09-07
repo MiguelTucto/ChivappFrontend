@@ -1,0 +1,23 @@
+{
+  "name": "ChivApp",
+  "short_name": "ChivApp",
+  "description": "Encuentra y contrata músicos para tu evento",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F5F7F8",
+  "theme_color": "#46C0D9",
+  "icons": [
+    {
+      "src": "/ico_chivapp.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/ico_chivapp.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

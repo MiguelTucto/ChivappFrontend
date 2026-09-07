@@ -1,0 +1,328 @@
+@import "tailwindcss";
+@config "../../tailwind.config.ts";
+
+:root {
+  --app-navbar-height: 5rem;
+  /* Empieza en 0 (navbar oculto): AppNavbar la actualiza a
+     var(--app-navbar-height) en cuanto detecta que está visible. */
+  --app-navbar-reveal-offset: 0px;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  @apply bg-background text-foreground font-sans antialiased;
+  overflow-x: clip;
+  /* Que el cambio claro/oscuro sea un fundido, no un salto brusco. */
+  transition: background-color 300ms ease, color 300ms ease;
+}
+
+::selection {
+  @apply bg-primary/30 text-foreground;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #d4d4d8 transparent;
+}
+
+.dark * {
+  scrollbar-color: #3f4652 transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-thumb {
+  @apply bg-default-300 rounded-full;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Scrollable without visible scrollbar (e.g. sticky commitment card). */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+@keyframes timeline-pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  70% {
+    transform: scale(1.85);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.85);
+    opacity: 0;
+  }
+}
+
+.animate-timeline-pulse {
+  animation: timeline-pulse-ring 1.8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+@keyframes notification-pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  55% {
+    transform: scale(1.65);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.65);
+    opacity: 0;
+  }
+}
+
+@keyframes notification-badge-pop {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.18);
+  }
+  70% {
+    transform: scale(0.96);
+  }
+}
+
+.animate-notification-pulse {
+  animation: notification-pulse-ring 1.15s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+.animate-notification-badge {
+  animation: notification-badge-pop 1.35s ease-in-out infinite;
+}
+
+/*
+ * Estilos compartidos del documento de contrato: se usan en el editor tipo
+ * Word (TipTap), en la vista previa del diseñador y en el visor del
+ * contrato de una reserva, para que lo escrito se vea "tal cual" en cada
+ * vista y en el PDF generado (ver Backend/app/services/contract_pdf.py).
+ *
+ * Siempre se renderiza sobre "papel" (.contract-doc-page) blanco, también
+ * en dark mode, para conservar contraste y colores inline del editor.
+ */
+.contract-doc-page {
+  background-color: #ffffff;
+  color: #18181b;
+}
+
+.contract-doc {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 11pt;
+  line-height: 1.65;
+  color: #374151;
+  word-break: break-word;
+}
+
+.contract-doc h1,
+.contract-doc h2,
+.contract-doc h3 {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.contract-doc h2,
+.contract-doc h3 {
+  text-transform: uppercase;
+  color: #111827;
+  margin: 1.1em 0 0.5em;
+}
+
+.contract-doc h1 {
+  font-size: 1.85em;
+  text-align: center;
+  color: #111827;
+  margin: 0 0 0.9em;
+}
+
+.contract-doc h2 {
+  font-size: 1.2em;
+}
+
+.contract-doc h3 {
+  font-size: 1.05em;
+}
+
+.contract-doc p {
+  margin: 0 0 0.75em;
+}
+
+.contract-doc ul,
+.contract-doc ol {
+  margin: 0 0 0.75em 1.4em;
+  padding: 0;
+}
+
+.contract-doc li {
+  margin-bottom: 0.25em;
+}
+
+.contract-doc blockquote {
+  margin: 0.75em 0;
+  padding: 0.4em 0.9em;
+  border-left: 3px solid #d1d5db;
+  color: #4b5563;
+  font-style: italic;
+}
+
+.contract-doc hr {
+  border: none;
+  border-top: 1px solid #d1d5db;
+  margin: 1em 0;
+}
+
+.contract-doc strong {
+  font-weight: 700;
+}
+
+.contract-doc em {
+  font-style: italic;
+}
+
+.contract-doc u {
+  text-decoration: underline;
+}
+
+.contract-doc s {
+  text-decoration: line-through;
+}
+
+.contract-doc img {
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+
+.contract-doc .contract-variable,
+.contract-doc [data-contract-variable] {
+  background-color: #fde68a;
+  color: #92400e;
+  border-radius: 3px;
+  padding: 0.05em 0.3em;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.contract-doc-editor {
+  min-height: 320px;
+  outline: none;
+}
+
+.contract-doc-editor p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #a1a1aa;
+  pointer-events: none;
+  height: 0;
+}
+
+/* ==========================================================================
+   HeroUI Modals: Global Backdrop Blur & Refined Close Button UI/UX
+   ========================================================================== */
+
+/* Universal backdrop blur for ANY modal opened in the app */
+div[tabindex="-1"]:has(> [data-slot="wrapper"]) > div:first-child,
+div:has(> [data-slot="wrapper"]) > div:first-child,
+[data-slot="backdrop"] {
+  backdrop-filter: blur(12px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(150%) !important;
+  background-color: rgba(15, 23, 42, 0.45) !important;
+}
+
+.dark div[tabindex="-1"]:has(> [data-slot="wrapper"]) > div:first-child,
+.dark div:has(> [data-slot="wrapper"]) > div:first-child,
+.dark [data-slot="backdrop"] {
+  backdrop-filter: blur(14px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(140%) !important;
+  background-color: rgba(0, 0, 0, 0.72) !important;
+}
+
+/* Harmonious Close Button ('X') inside Modal Cards */
+[data-slot="wrapper"] [role="dialog"] button[aria-label="Close"],
+[data-slot="wrapper"] section button[aria-label="Close"],
+[data-slot="wrapper"] button[aria-label="Close"] {
+  top: 1rem !important;
+  right: 1rem !important;
+  inset-inline-end: 1rem !important;
+  width: 2.25rem !important;
+  height: 2.25rem !important;
+  min-width: 2.25rem !important;
+  min-height: 2.25rem !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 9999px !important;
+  box-sizing: border-box !important;
+  color: hsl(var(--heroui-default-500, 240 4% 46%)) !important;
+  background-color: transparent !important;
+  border: 1px solid transparent !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  cursor: pointer !important;
+  z-index: 50 !important;
+}
+
+[data-slot="wrapper"] [role="dialog"] button[aria-label="Close"]:hover,
+[data-slot="wrapper"] section button[aria-label="Close"]:hover,
+[data-slot="wrapper"] button[aria-label="Close"]:hover {
+  color: hsl(var(--heroui-foreground, 222 47% 11%)) !important;
+  background-color: hsl(var(--heroui-default-100, 240 5% 92%)) !important;
+  border-color: hsl(var(--heroui-default-200, 240 6% 88%)) !important;
+  transform: scale(1.06);
+  box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.08) !important;
+}
+
+.dark [data-slot="wrapper"] [role="dialog"] button[aria-label="Close"]:hover,
+.dark [data-slot="wrapper"] section button[aria-label="Close"]:hover,
+.dark [data-slot="wrapper"] button[aria-label="Close"]:hover {
+  color: hsl(var(--heroui-foreground, 0 0% 98%)) !important;
+  background-color: hsl(var(--heroui-default-100, 240 4% 18%)) !important;
+  border-color: hsl(var(--heroui-default-200, 240 4% 28%)) !important;
+  box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-slot="wrapper"] [role="dialog"] button[aria-label="Close"]:active,
+[data-slot="wrapper"] section button[aria-label="Close"]:active,
+[data-slot="wrapper"] button[aria-label="Close"]:active {
+  transform: scale(0.94);
+}
+
+

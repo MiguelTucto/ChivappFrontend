@@ -1,0 +1,569 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { Chip } from "@heroui/react";
+import { Icon } from "@iconify/react";
+import { labelProfileField } from "@/lib/profile-validation/field-labels";
+import type { ProfileValidationOut } from "@/types/api";
+
+export type ProfileWizardStepDef = {
+    key: string;
+    title: string;
+    description: string;
+    icon: string;
+    shortTitle?: string;
+    required?: boolean;
+};
+
+type StepState = "done" | "current" | "upcoming";
+
+type RailStep = {
+    id: string;
+    title: string;
+    shortTitle: string;
+    description: string;
+    icon: string;
+    state: StepState;
+    missing: string[];
+    required: boolean;
+};
+
+type Props = {
+    steps: ProfileWizardStepDef[];
+    activeStep: number;
+    validation: ProfileValidationOut;
+    onStepSelect: (index: number) => void;
+    rejectionReason?: string | null;
+    /** Main heading shown inside the expanded timeline card */
+    heading: string;
+    /** Short friendly subtitle under the heading */
+    subtitle: string;
+    /** Small chip above the heading */
+    badgeLabel?: string;
+    collapseOnScroll?: boolean;
+};
+
+const TRANSITION =
+    "duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]";
+
+function isStepRequired(
+    stepDef: ProfileWizardStepDef,
+    validation: ProfileValidationOut,
+): boolean {
+    const fromValidation = validation.steps.find((item) => item.key === stepDef.key);
+    if (typeof fromValidation?.required === "boolean") {
+        return fromValidation.required;
+    }
+    return stepDef.required !== false;
+}
+
+function getStepState(
+    index: number,
+    activeStep: number,
+    isCompleted: boolean,
+): StepState {
+    if (isCompleted) return "done";
+    if (index === activeStep) return "current";
+    return "upcoming";
+}
+
+function buildRailSteps(
+    steps: ProfileWizardStepDef[],
+    activeStep: number,
+    validation: ProfileValidationOut,
+): RailStep[] {
+    return steps.map((step, index) => {
+        const validationStep = validation.steps.find((item) => item.key === step.key);
+        const isCompleted = validationStep?.completed ?? false;
+        return {
+            id: step.key,
+            title: step.title,
+            shortTitle: step.shortTitle ?? step.title,
+            description: step.description,
+            icon: step.icon,
+            state: getStepState(index, activeStep, isCompleted),
+            missing: validationStep?.missing ?? [],
+            required: isStepRequired(step, validation),
+        };
+    });
+}
+
+function phaseProgressRatio(steps: RailStep[]): number {
+    const currentIndex = steps.findIndex((step) => step.state === "current");
+    let progressIndex = currentIndex;
+    if (progressIndex < 0) {
+        progressIndex = -1;
+        for (let i = 0; i < steps.length; i += 1) {
+            if (steps[i].state === "done") progressIndex = i;
+        }
+        if (progressIndex < 0) progressIndex = 0;
+    }
+    if (steps.length <= 1) {
+        return progressIndex >= 0 && steps[0]?.state === "done" ? 1 : 0;
+    }
+    return progressIndex / (steps.length - 1);
+}
+
+function PhaseMarker({
+    step,
+    size = "md",
+}: {
+    step: RailStep;
+    size?: "sm" | "md";
+}) {
+    const box = size === "sm" ? "size-8" : "size-9 sm:size-10";
+    const iconSize = size === "sm" ? 16 : 18;
+
+    if (step.state === "done") {
+        return (
+            <span
+                className={`relative z-10 flex ${box} items-center justify-center rounded-full bg-success text-success-foreground shadow-soft`}
+                title={step.title}
+            >
+                <Icon icon="material-symbols:check-rounded" width={iconSize} />
+            </span>
+        );
+    }
+
+    if (step.state === "current") {
+        return (
+            <span
+                className={`relative z-10 flex ${box} items-center justify-center`}
+                title={step.title}
+            >
+                <span
+                    aria-hidden
+                    className="absolute inset-0 rounded-full bg-primary/35 animate-timeline-pulse"
+                />
+                <span
+                    aria-hidden
+                    className="absolute inset-0 rounded-full bg-primary/20 animate-timeline-pulse [animation-delay:0.55s]"
+                />
+                <span
+                    className={`relative flex ${box} items-center justify-center rounded-full bg-primary text-primary-foreground shadow-glow ring-4 ring-primary/20`}
+                >
+                    <Icon icon={step.icon} width={iconSize} />
+                </span>
+            </span>
+        );
+    }
+
+    return (
+        <span
+            className={`relative z-10 flex ${box} items-center justify-center rounded-full border-2 border-default-300 bg-content1 text-default-500`}
+            title={step.title}
+        >
+            <Icon icon={step.icon} width={iconSize} />
+        </span>
+    );
+}
+
+function PhaseRail({
+    steps,
+    onStepSelect,
+    compact = false,
+}: {
+    steps: RailStep[];
+    onStepSelect?: (index: number) => void;
+    compact?: boolean;
+}) {
+    const progressRatio = phaseProgressRatio(steps);
+    const markerSize = compact ? "sm" : "md";
+    const trackTop = compact ? "top-4" : "top-[1.125rem] sm:top-5";
+
+    return (
+        <nav aria-label="Pasos del perfil" className="w-full">
+            <ol
+                className="relative flex sm:grid w-full gap-x-3 sm:gap-x-1.5 overflow-x-auto sm:overflow-visible pb-1 sm:pb-0 scrollbar-none"
+                style={{
+                    gridTemplateColumns: `repeat(${Math.max(steps.length, 1)}, minmax(0, 1fr))`,
+                }}
+            >
+                <li
+                    aria-hidden
+                    className={`pointer-events-none absolute ${trackTop} -translate-y-1/2 h-0.5`}
+                    style={{
+                        gridColumn: "1 / -1",
+                        left: `calc(100% / ${Math.max(steps.length, 1)} / 2)`,
+                        right: `calc(100% / ${Math.max(steps.length, 1)} / 2)`,
+                    }}
+                >
+                    <span className="absolute inset-0 rounded-full bg-default-200/90" />
+                    <span
+                        className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-primary via-primary to-primary/70 transition-[width] duration-500"
+                        style={{ width: `${progressRatio * 100}%` }}
+                    />
+                </li>
+
+                {steps.map((step, index) => {
+                    const content = (
+                        <>
+                            <div
+                                className={`flex items-center justify-center ${
+                                    compact ? "h-8" : "h-9 sm:h-10"
+                                }`}
+                            >
+                                <PhaseMarker step={step} size={markerSize} />
+                            </div>
+                            <span
+                                className={`mt-2 w-full font-semibold leading-tight line-clamp-2 ${
+                                    compact
+                                        ? "text-[9px] sm:text-[10px] md:text-xs"
+                                        : "text-[10px] sm:text-xs"
+                                } ${
+                                    step.state === "current"
+                                        ? "text-primary"
+                                        : step.state === "done"
+                                          ? "text-success"
+                                          : "text-default-600"
+                                }`}
+                                title={step.title}
+                            >
+                                {compact ? (
+                                    step.shortTitle
+                                ) : (
+                                    <>
+                                        <span className="hidden sm:inline">{step.title}</span>
+                                        <span className="sm:hidden">{step.shortTitle}</span>
+                                    </>
+                                )}
+                            </span>
+                            {!compact && !step.required ? (
+                                <span className="mt-1 text-[9px] sm:text-[10px] font-medium text-default-400">
+                                    Opcional
+                                </span>
+                            ) : !compact ? (
+                                <span className="mt-1 text-[9px] sm:text-[10px] tabular-nums text-default-400">
+                                    {index + 1}/{steps.length}
+                                </span>
+                            ) : null}
+                        </>
+                    );
+
+                    return (
+                        <li
+                            key={step.id}
+                            className="relative z-10 flex flex-col items-center text-center shrink-0 w-16 sm:w-auto sm:shrink sm:min-w-0 px-0.5"
+                        >
+                            {onStepSelect ? (
+                                <button
+                                    type="button"
+                                    onClick={() => onStepSelect(index)}
+                                    className="flex flex-col items-center w-full min-w-0 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 cursor-pointer"
+                                    aria-current={
+                                        step.state === "current" ? "step" : undefined
+                                    }
+                                    aria-label={`${index + 1}. ${step.title}${
+                                        step.required ? "" : " (opcional)"
+                                    }`}
+                                >
+                                    {content}
+                                </button>
+                            ) : (
+                                content
+                            )}
+                        </li>
+                    );
+                })}
+            </ol>
+        </nav>
+    );
+}
+
+function ExpandedTimelineCard({
+    railSteps,
+    validation,
+    onStepSelect,
+    rejectionReason,
+    heading,
+    subtitle,
+    badgeLabel,
+    requiredDone,
+    requiredTotal,
+}: {
+    railSteps: RailStep[];
+    validation: ProfileValidationOut;
+    onStepSelect: (index: number) => void;
+    rejectionReason?: string | null;
+    heading: string;
+    subtitle: string;
+    badgeLabel?: string;
+    requiredDone: number;
+    requiredTotal: number;
+}) {
+    const current = railSteps.find((step) => step.state === "current") ?? null;
+    const currentMissingLabels = (current?.missing ?? []).map(labelProfileField);
+    const readyToSubmit = validation.can_submit;
+
+    let currentHint = current?.description ?? "";
+    if (current) {
+        if (current.state === "done" || current.missing.length === 0) {
+            currentHint = current.required
+                ? "Este paso ya está listo."
+                : "Opcional: puedes completarlo ahora o más adelante.";
+        } else if (current.required) {
+            currentHint =
+                currentMissingLabels.length > 0
+                    ? `Completa: ${currentMissingLabels.join(", ")}`
+                    : "Completa este paso para poder enviar tu perfil.";
+        } else {
+            currentHint = "Opcional: mejora tu perfil cuando quieras.";
+        }
+    }
+
+    return (
+        <div className="overflow-hidden rounded-4xl border border-default-200/70 bg-content1 shadow-soft">
+            <div className="px-4 sm:px-5 pt-4 sm:pt-5 pb-3">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                    <div className="min-w-0">
+                        {badgeLabel ? (
+                            <Chip color="primary" variant="flat" size="sm" className="mb-2">
+                                {badgeLabel}
+                            </Chip>
+                        ) : (
+                            <p className="text-[11px] font-semibold uppercase tracking-wide text-primary mb-1">
+                                Timeline
+                            </p>
+                        )}
+                        <h1 className="text-xl sm:text-2xl font-bold text-foreground text-balance">
+                            {heading}
+                        </h1>
+                        <p className="text-sm text-default-500 mt-1.5 text-pretty max-w-2xl">
+                            {subtitle}
+                        </p>
+                    </div>
+                    <Chip
+                        color={readyToSubmit ? "success" : "primary"}
+                        variant="flat"
+                        size="sm"
+                        className="shrink-0 self-start"
+                    >
+                        {readyToSubmit
+                            ? "Listo para enviar"
+                            : `${requiredDone}/${requiredTotal} obligatorios`}
+                    </Chip>
+                </div>
+
+                {validation.status === "rejected" && rejectionReason ? (
+                    <div className="mt-3 rounded-xl border border-danger/30 bg-danger/10 px-3.5 py-2.5">
+                        <p className="text-[11px] text-danger font-semibold">
+                            Necesita correcciones
+                        </p>
+                        <p className="text-xs text-default-700 mt-0.5">{rejectionReason}</p>
+                    </div>
+                ) : null}
+            </div>
+
+            <div className="px-3 sm:px-5 pb-4 sm:pb-5 pt-1 flex flex-col gap-4">
+                <PhaseRail steps={railSteps} onStepSelect={onStepSelect} />
+
+                {current ? (
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3 rounded-2xl border border-primary/25 bg-primary/5 px-3.5 py-3">
+                        <div className="flex items-center gap-2 shrink-0 flex-wrap">
+                            <PhaseMarker step={current} size="sm" />
+                            <Chip size="sm" color="primary" variant="solid">
+                                Ahora · {current.title}
+                            </Chip>
+                            {!current.required ? (
+                                <Chip size="sm" color="default" variant="flat">
+                                    Opcional
+                                </Chip>
+                            ) : null}
+                        </div>
+                        <p className="text-sm text-foreground leading-snug text-pretty min-w-0">
+                            {currentHint}
+                        </p>
+                    </div>
+                ) : null}
+            </div>
+        </div>
+    );
+}
+
+function StickyCollapsingTimeline({
+    railSteps,
+    validation,
+    onStepSelect,
+    rejectionReason,
+    heading,
+    subtitle,
+    badgeLabel,
+    requiredDone,
+    requiredTotal,
+}: {
+    railSteps: RailStep[];
+    validation: ProfileValidationOut;
+    onStepSelect: (index: number) => void;
+    rejectionReason?: string | null;
+    heading: string;
+    subtitle: string;
+    badgeLabel?: string;
+    requiredDone: number;
+    requiredTotal: number;
+}) {
+    const sentinelRef = useRef<HTMLDivElement | null>(null);
+    const shellRef = useRef<HTMLDivElement | null>(null);
+    const [collapsed, setCollapsed] = useState(false);
+
+    useEffect(() => {
+        const sentinel = sentinelRef.current;
+        if (!sentinel) return;
+
+        const navbarPx = (() => {
+            const raw = getComputedStyle(document.documentElement)
+                .getPropertyValue("--app-navbar-height")
+                .trim();
+            if (!raw) return 80;
+            if (raw.endsWith("px")) {
+                const px = Number.parseFloat(raw);
+                return Number.isFinite(px) ? px : 80;
+            }
+            if (raw.endsWith("rem")) {
+                const rem = Number.parseFloat(raw);
+                const rootFont = Number.parseFloat(
+                    getComputedStyle(document.documentElement).fontSize,
+                );
+                return Number.isFinite(rem) && Number.isFinite(rootFont)
+                    ? rem * rootFont
+                    : 80;
+            }
+            const numeric = Number.parseFloat(raw);
+            return Number.isFinite(numeric) ? numeric : 80;
+        })();
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                setCollapsed(!entry.isIntersecting);
+            },
+            {
+                rootMargin: `-${Math.round(navbarPx)}px 0px 0px 0px`,
+                threshold: 0,
+            },
+        );
+
+        observer.observe(sentinel);
+        return () => observer.disconnect();
+    }, []);
+
+    useEffect(() => {
+        const shell = shellRef.current;
+        if (!shell) return;
+
+        const publishHeight = () => {
+            const height = Math.ceil(shell.getBoundingClientRect().height);
+            document.documentElement.style.setProperty(
+                "--profile-timeline-height",
+                `${height}px`,
+            );
+        };
+
+        publishHeight();
+        const resizeObserver = new ResizeObserver(publishHeight);
+        resizeObserver.observe(shell);
+
+        return () => {
+            resizeObserver.disconnect();
+            document.documentElement.style.removeProperty(
+                "--profile-timeline-height",
+            );
+        };
+    }, [collapsed]);
+
+    return (
+        <>
+            <div ref={sentinelRef} className="h-px w-full" aria-hidden />
+            <div
+                ref={shellRef}
+                className={`sticky z-40 top-[var(--app-navbar-height)] transition-[padding,background-color,border-color,backdrop-filter] ${TRANSITION} ${
+                    collapsed
+                        ? "bg-background/75 backdrop-blur-xl border-b border-default-200/40 py-2 sm:py-2.5 -mx-4 px-4 lg:-mx-8 lg:px-8"
+                        : "bg-transparent border-b border-transparent py-0 mb-1"
+                }`}
+            >
+                <div className="max-w-6xl mx-auto">
+                    <div
+                        className={`overflow-hidden transition-all ${TRANSITION} ${
+                            collapsed
+                                ? "max-h-0 opacity-0 -translate-y-1 scale-[0.99] pointer-events-none"
+                                : "max-h-[56rem] opacity-100 translate-y-0 scale-100"
+                        }`}
+                        aria-hidden={collapsed}
+                    >
+                        <ExpandedTimelineCard
+                            railSteps={railSteps}
+                            validation={validation}
+                            onStepSelect={onStepSelect}
+                            rejectionReason={rejectionReason}
+                            heading={heading}
+                            subtitle={subtitle}
+                            badgeLabel={badgeLabel}
+                            requiredDone={requiredDone}
+                            requiredTotal={requiredTotal}
+                        />
+                    </div>
+                    <div
+                        className={`overflow-hidden transition-all ${TRANSITION} ${
+                            collapsed
+                                ? "max-h-28 opacity-100 translate-y-0 scale-100"
+                                : "max-h-0 opacity-0 translate-y-1 scale-[0.99] pointer-events-none"
+                        }`}
+                        aria-hidden={!collapsed}
+                    >
+                        <PhaseRail
+                            steps={railSteps}
+                            onStepSelect={onStepSelect}
+                            compact
+                        />
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+}
+
+export default function ProfileWizardTimeline({
+    steps,
+    activeStep,
+    validation,
+    onStepSelect,
+    rejectionReason,
+    heading,
+    subtitle,
+    badgeLabel,
+    collapseOnScroll = true,
+}: Props) {
+    const railSteps = buildRailSteps(steps, activeStep, validation);
+    const requiredSteps = railSteps.filter((step) => step.required);
+    const requiredDone = requiredSteps.filter((step) => step.state === "done").length;
+    const requiredTotal = Math.max(requiredSteps.length, 1);
+
+    if (collapseOnScroll) {
+        return (
+            <StickyCollapsingTimeline
+                railSteps={railSteps}
+                validation={validation}
+                onStepSelect={onStepSelect}
+                rejectionReason={rejectionReason}
+                heading={heading}
+                subtitle={subtitle}
+                badgeLabel={badgeLabel}
+                requiredDone={requiredDone}
+                requiredTotal={requiredTotal}
+            />
+        );
+    }
+
+    return (
+        <ExpandedTimelineCard
+            railSteps={railSteps}
+            validation={validation}
+            onStepSelect={onStepSelect}
+            rejectionReason={rejectionReason}
+            heading={heading}
+            subtitle={subtitle}
+            badgeLabel={badgeLabel}
+            requiredDone={requiredDone}
+            requiredTotal={requiredTotal}
+        />
+    );
+}
