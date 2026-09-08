@@ -35,7 +35,7 @@ export default function TermsPage() {
                     Términos y Condiciones
                 </h1>
                 <p className="text-default-500 text-sm">
-                    Última actualización: 24 de agosto de 2026
+                    Última actualización: 8 de septiembre de 2026
                 </p>
             </header>
 
@@ -59,7 +59,13 @@ export default function TermsPage() {
                 </p>
             </Section>
 
-            <Section title="3. Cuentas y verificación">
+            <Section title="3. Cuentas, registro y verificación">
+                <p>
+                    Puedes registrarte utilizando tu dirección de correo electrónico o tu
+                    cuenta de Google. Al registrarte con Google, autorizas a {SITE_NAME} a
+                    recibir tu información básica de perfil (nombre, correo electrónico verificado
+                    y foto de perfil) para crear y vincular tu cuenta de forma segura.
+                </p>
                 <p>
                     Debes proporcionar información veraz al registrarte. Los perfiles de
                     músicos y contratistas pueden requerir verificación de identidad

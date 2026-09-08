@@ -36,7 +36,7 @@ export default function PrivacyPage() {
                     Privacidad y Cookies
                 </h1>
                 <p className="text-default-500 text-sm">
-                    Última actualización: 24 de agosto de 2026
+                    Última actualización: 8 de septiembre de 2026
                 </p>
             </header>
 
@@ -44,15 +44,18 @@ export default function PrivacyPage() {
                 <p>Para operar {SITE_NAME} recolectamos:</p>
                 <ul className="list-disc pl-5 flex flex-col gap-1.5">
                     <li>
-                        <strong className="text-foreground">Datos de cuenta:</strong>{" "}
-                        nombre, correo, teléfono y contraseña (almacenada de forma
-                        cifrada, nunca en texto plano).
+                        <strong className="text-foreground">Datos de cuenta y autenticación:</strong>{" "}
+                        nombre, correo electrónico, teléfono y contraseña (almacenada de forma
+                        cifrada, nunca en texto plano). Si decides registrarte o iniciar sesión a través
+                        de un servicio de terceros (como el inicio de sesión con Google), recolectamos tu
+                        nombre completo, correo electrónico verificado y fotografía de perfil proporcionados
+                        por Google bajo tu autorización expresa.
                     </li>
                     <li>
                         <strong className="text-foreground">Datos de perfil:</strong>{" "}
                         biografía, géneros, instrumentos, precios, ubicación, fotos y
-                        videos de portafolio, y (para músicos) una firma digital usada
-                        para generar contratos.
+                        videos de portafolio, datos bancarios/de cobro confidenciales para desembolsos,
+                        y (para músicos) una firma digital usada para generar contratos.
                     </li>
                     <li>
                         <strong className="text-foreground">Datos de reservas:</strong>{" "}
@@ -72,25 +75,47 @@ export default function PrivacyPage() {
                 </ul>
             </Section>
 
-            <Section title="2. Cómo usamos tus datos">
+            <Section title="2. Cómo usamos tus datos y Política de Datos de Google">
                 <p>
-                    Usamos tus datos para operar la plataforma: mostrar perfiles,
-                    procesar reservas y pagos, generar y validar contratos, enviarte
-                    notificaciones sobre tu actividad, y responder tus consultas de
-                    ayuda. No vendemos tus datos a terceros.
+                    Usamos tus datos exclusivamente para operar la plataforma: mostrar perfiles,
+                    procesar reservas y pagos, generar y validar contratos de servicio, enviarte
+                    notificaciones operativas sobre tu actividad, y responder tus consultas de
+                    soporte. No vendemos ni alquilamos tus datos a terceros.
+                </p>
+                <p>
+                    En relación con el inicio de sesión con Google, el uso que hace {SITE_NAME} de la
+                    información recibida a través de las APIs de Google se adhiere a la{" "}
+                    <strong className="text-foreground">Política de Datos de Usuario de los Servicios de las APIs de Google (Google API Services User Data Policy)</strong>,
+                    incluyendo los requisitos de Uso Limitado (Limited Use). No utilizamos los datos obtenidos de Google
+                    para servir anuncios publicitarios ni para entrenar modelos generales de inteligencia artificial.
                 </p>
             </Section>
 
-            <Section id="cookies" title="3. Cookies">
+            <Section id="cookies" title="3. Cookies y almacenamiento de sesión">
                 <p>
-                    {SITE_NAME} usa una única cookie esencial,{" "}
-                    <code className="px-1.5 py-0.5 rounded bg-default-100 text-foreground text-xs">
-                        access_token
-                    </code>
-                    , necesaria para mantener tu sesión iniciada de forma segura.
-                    Actualmente no usamos cookies de analítica ni de publicidad. Si esto
-                    cambia en el futuro, actualizaremos esta sección y, de ser
-                    necesario, pediremos tu consentimiento adicional.
+                    {SITE_NAME} utiliza únicamente cookies esenciales HTTP-only y de seguridad,
+                    necesarias para mantener tu sesión activa y proteger las transacciones:
+                </p>
+                <ul className="list-disc pl-5 flex flex-col gap-1.5">
+                    <li>
+                        <code className="px-1.5 py-0.5 rounded bg-default-100 text-foreground text-xs">
+                            access_token
+                        </code>{" "}
+                        y{" "}
+                        <code className="px-1.5 py-0.5 rounded bg-default-100 text-foreground text-xs">
+                            refresh_token
+                        </code>
+                        : gestionan la autenticación segura y el ciclo de vida de tu sesión.
+                    </li>
+                    <li>
+                        <code className="px-1.5 py-0.5 rounded bg-default-100 text-foreground text-xs">
+                            oauth_pending
+                        </code>
+                        : cookie temporal y cifrada que se utiliza exclusivamente durante el flujo de registro con Google para vincular tu elección de rol (músico o contratista).
+                    </li>
+                </ul>
+                <p>
+                    Actualmente no usamos cookies de analítica invasiva ni redes de publicidad de terceros.
                 </p>
             </Section>
 
