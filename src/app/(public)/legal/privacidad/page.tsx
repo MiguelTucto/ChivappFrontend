@@ -193,10 +193,10 @@ export default function PrivacyPage() {
                 </p>
             </Section>
 
-            <Section title="9. Ejercicio de Derechos ARCO (Acceso, Rectificación, Cancelación y Oposición)">
+            <Section id="eliminacion-datos" title="9. Ejercicio de Derechos ARCO y Eliminación de Datos de Usuario (Facebook / Google)">
                 <p>
-                    De conformidad con la Ley N° 29733, tienes derecho a ejercer en cualquier momento tus derechos de{" "}
-                    <strong className="text-foreground">Acceso, Rectificación, Cancelación y Oposición (Derechos ARCO)</strong> respecto de tu información personal:
+                    De conformidad con la Ley N° 29733 y los lineamientos de las plataformas de autenticación (Meta / Facebook y Google),
+                    tienes derecho a solicitar la eliminación o cancelación definitiva de tus datos personales y cuentas vinculadas en cualquier momento:
                 </p>
                 <ul className="list-disc pl-5 flex flex-col gap-1.5">
                     <li><strong className="text-foreground">Acceso:</strong> conocer qué datos tuyos poseemos, su origen y la finalidad de su tratamiento.</li>
