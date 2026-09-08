@@ -30,13 +30,36 @@ export function useMercadoPago() {
     const [loadError, setLoadError] = useState<string | null>(null);
     const mpInstanceRef = useRef<InstanceType<NonNullable<Window["MercadoPago"]>> | null>(null);
 
-    const publicKey = process.env.NEXT_PUBLIC_MERCADO_PAGO_PUBLIC_KEY || "";
+    const [publicKey, setPublicKey] = useState<string>(
+        process.env.NEXT_PUBLIC_MERCADO_PAGO_PUBLIC_KEY || ""
+    );
 
     useEffect(() => {
+        let isMounted = true;
         if (!publicKey) {
-            setLoadError("NEXT_PUBLIC_MERCADO_PAGO_PUBLIC_KEY no está configurada.");
-            return;
+            fetch("/api/mercadopago/public-key")
+                .then((res) => (res.ok ? res.json() : Promise.reject(new Error("Failed to load key"))))
+                .then((data) => {
+                    if (!isMounted) return;
+                    if (data?.publicKey) {
+                        setPublicKey(data.publicKey);
+                    } else {
+                        setLoadError("NEXT_PUBLIC_MERCADO_PAGO_PUBLIC_KEY no está configurada.");
+                    }
+                })
+                .catch(() => {
+                    if (isMounted) {
+                        setLoadError("NEXT_PUBLIC_MERCADO_PAGO_PUBLIC_KEY no está configurada.");
+                    }
+                });
         }
+        return () => {
+            isMounted = false;
+        };
+    }, [publicKey]);
+
+    useEffect(() => {
+        if (!publicKey) return;
 
         if (window.MercadoPago) {
             if (!mpInstanceRef.current) {
