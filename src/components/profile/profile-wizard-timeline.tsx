@@ -43,8 +43,7 @@ type Props = {
     collapseOnScroll?: boolean;
 };
 
-const TRANSITION =
-    "duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]";
+const TRANSITION = "duration-250 ease-out";
 
 function isStepRequired(
     stepDef: ProfileWizardStepDef,
@@ -401,123 +400,81 @@ function StickyCollapsingTimeline({
     requiredDone: number;
     requiredTotal: number;
 }) {
-    const sentinelRef = useRef<HTMLDivElement | null>(null);
     const shellRef = useRef<HTMLDivElement | null>(null);
     const [collapsed, setCollapsed] = useState(false);
 
     useEffect(() => {
-        const sentinel = sentinelRef.current;
-        if (!sentinel) return;
+        let rafId: number | null = null;
 
-        const navbarPx = (() => {
-            const raw = getComputedStyle(document.documentElement)
-                .getPropertyValue("--app-navbar-height")
-                .trim();
-            if (!raw) return 80;
-            if (raw.endsWith("px")) {
-                const px = Number.parseFloat(raw);
-                return Number.isFinite(px) ? px : 80;
-            }
-            if (raw.endsWith("rem")) {
-                const rem = Number.parseFloat(raw);
-                const rootFont = Number.parseFloat(
-                    getComputedStyle(document.documentElement).fontSize,
-                );
-                return Number.isFinite(rem) && Number.isFinite(rootFont)
-                    ? rem * rootFont
-                    : 80;
-            }
-            const numeric = Number.parseFloat(raw);
-            return Number.isFinite(numeric) ? numeric : 80;
-        })();
-
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                setCollapsed(!entry.isIntersecting);
-            },
-            {
-                rootMargin: `-${Math.round(navbarPx)}px 0px 0px 0px`,
-                threshold: 0,
-            },
-        );
-
-        observer.observe(sentinel);
-        return () => observer.disconnect();
-    }, []);
-
-    useEffect(() => {
-        const shell = shellRef.current;
-        if (!shell) return;
-
-        const publishHeight = () => {
-            const height = Math.ceil(shell.getBoundingClientRect().height);
-            document.documentElement.style.setProperty(
-                "--profile-timeline-height",
-                `${height}px`,
-            );
+        const handleScroll = () => {
+            if (rafId !== null) return;
+            rafId = window.requestAnimationFrame(() => {
+                rafId = null;
+                const scrollY = window.scrollY || document.documentElement.scrollTop;
+                // Histéresis limpia: colapsa al hacer scroll (> 120px) y solo re-expande cerca del top (< 40px)
+                if (scrollY > 120) {
+                    setCollapsed(true);
+                } else if (scrollY < 40) {
+                    setCollapsed(false);
+                }
+            });
         };
 
-        publishHeight();
-        const resizeObserver = new ResizeObserver(publishHeight);
-        resizeObserver.observe(shell);
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        handleScroll();
 
         return () => {
-            resizeObserver.disconnect();
-            document.documentElement.style.removeProperty(
-                "--profile-timeline-height",
-            );
+            if (rafId !== null) window.cancelAnimationFrame(rafId);
+            window.removeEventListener("scroll", handleScroll);
         };
-    }, [collapsed]);
+    }, []);
 
     return (
-        <>
-            <div ref={sentinelRef} className="h-px w-full" aria-hidden />
-            <div
-                ref={shellRef}
-                className={`sticky z-40 top-[var(--app-navbar-height)] transition-[padding,background-color,border-color,backdrop-filter] ${TRANSITION} ${
-                    collapsed
-                        ? "bg-background/75 backdrop-blur-xl border-b border-default-200/40 py-2 sm:py-2.5 -mx-4 px-4 lg:-mx-8 lg:px-8"
-                        : "bg-transparent border-b border-transparent py-0 mb-1"
-                }`}
-            >
-                <div className="max-w-6xl mx-auto">
-                    <div
-                        className={`overflow-hidden transition-all ${TRANSITION} ${
-                            collapsed
-                                ? "max-h-0 opacity-0 -translate-y-1 scale-[0.99] pointer-events-none"
-                                : "max-h-[56rem] opacity-100 translate-y-0 scale-100"
-                        }`}
-                        aria-hidden={collapsed}
-                    >
-                        <ExpandedTimelineCard
-                            railSteps={railSteps}
-                            validation={validation}
-                            onStepSelect={onStepSelect}
-                            rejectionReason={rejectionReason}
-                            heading={heading}
-                            subtitle={subtitle}
-                            badgeLabel={badgeLabel}
-                            requiredDone={requiredDone}
-                            requiredTotal={requiredTotal}
-                        />
-                    </div>
-                    <div
-                        className={`overflow-hidden transition-all ${TRANSITION} ${
-                            collapsed
-                                ? "max-h-28 opacity-100 translate-y-0 scale-100"
-                                : "max-h-0 opacity-0 translate-y-1 scale-[0.99] pointer-events-none"
-                        }`}
-                        aria-hidden={!collapsed}
-                    >
-                        <PhaseRail
-                            steps={railSteps}
-                            onStepSelect={onStepSelect}
-                            compact
-                        />
-                    </div>
+        <div
+            ref={shellRef}
+            className={`sticky z-40 top-[var(--app-navbar-height)] transition-[padding,background-color,border-color,backdrop-filter] ${TRANSITION} ${
+                collapsed
+                    ? "bg-background/85 backdrop-blur-xl border-b border-default-200/50 py-2 sm:py-2.5 -mx-4 px-4 lg:-mx-8 lg:px-8 shadow-xs"
+                    : "bg-transparent border-b border-transparent py-0 mb-1"
+            }`}
+        >
+            <div className="max-w-6xl mx-auto">
+                <div
+                    className={`overflow-hidden transition-all ${TRANSITION} ${
+                        collapsed
+                            ? "max-h-0 opacity-0 -translate-y-1 scale-[0.99] pointer-events-none"
+                            : "max-h-96 opacity-100 translate-y-0 scale-100"
+                    }`}
+                    aria-hidden={collapsed}
+                >
+                    <ExpandedTimelineCard
+                        railSteps={railSteps}
+                        validation={validation}
+                        onStepSelect={onStepSelect}
+                        rejectionReason={rejectionReason}
+                        heading={heading}
+                        subtitle={subtitle}
+                        badgeLabel={badgeLabel}
+                        requiredDone={requiredDone}
+                        requiredTotal={requiredTotal}
+                    />
+                </div>
+                <div
+                    className={`overflow-hidden transition-all ${TRANSITION} ${
+                        collapsed
+                            ? "max-h-24 opacity-100 translate-y-0 scale-100"
+                            : "max-h-0 opacity-0 translate-y-1 scale-[0.99] pointer-events-none"
+                    }`}
+                    aria-hidden={!collapsed}
+                >
+                    <PhaseRail
+                        steps={railSteps}
+                        onStepSelect={onStepSelect}
+                        compact
+                    />
                 </div>
             </div>
-        </>
+        </div>
     );
 }
 

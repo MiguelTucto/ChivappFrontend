@@ -585,6 +585,7 @@ export default function MusicianProfileWizard() {
         const uploaded: MusicianMediaOut[] = [];
         let orderIndex = media.length;
         let failedCount = 0;
+        let lastErrorMessage = "";
 
         for (const file of files) {
             try {
@@ -596,8 +597,9 @@ export default function MusicianProfileWizard() {
                 });
                 uploaded.push(created);
                 orderIndex += 1;
-            } catch {
+            } catch (err) {
                 failedCount += 1;
+                if (err instanceof Error) lastErrorMessage = err.message;
             }
         }
 
@@ -614,8 +616,11 @@ export default function MusicianProfileWizard() {
             });
         } else if (failedCount > 0) {
             addToast({
-                title: "Algunas imágenes no se pudieron subir",
-                description: `${uploaded.length} de ${files.length} imágenes se cargaron correctamente.`,
+                title: uploaded.length > 0 ? "Algunas imágenes no se pudieron subir" : "Error al subir imágenes",
+                description:
+                    uploaded.length > 0
+                        ? `${uploaded.length} de ${files.length} imágenes se cargaron correctamente.`
+                        : lastErrorMessage || "No se pudo cargar la imagen seleccionada.",
                 color: uploaded.length > 0 ? "warning" : "danger",
             });
         }

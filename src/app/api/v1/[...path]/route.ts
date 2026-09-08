@@ -27,7 +27,8 @@ function isInternalSlashRedirect(fromUrl: string, toUrl: string): boolean {
 }
 
 async function proxyRequest(request: NextRequest, pathSegments: string[]) {
-    const path = pathSegments.join("/");
+    const hasTrailingSlash = request.nextUrl.pathname.endsWith("/");
+    const path = pathSegments.join("/") + (hasTrailingSlash ? "/" : "");
     const search = request.nextUrl.search;
     let targetUrl = `${API_BASE}/api/v1/${path}${search}`;
 
@@ -40,6 +41,11 @@ async function proxyRequest(request: NextRequest, pathSegments: string[]) {
     const cookie = request.headers.get("cookie");
     if (cookie) {
         headers.set("cookie", cookie);
+    }
+
+    const auth = request.headers.get("authorization");
+    if (auth) {
+        headers.set("authorization", auth);
     }
 
     // Metadata reenviada para endpoints que la registran (ej. ayuda/soporte).

@@ -472,7 +472,7 @@ export default function BookingMercadoPagoModal({
                                         <div className="flex flex-col gap-1.5 bg-default-50 p-3 rounded-xl border border-default-200">
                                             <label className="text-xs font-semibold text-default-700 flex items-center gap-1.5">
                                                 <Icon icon="solar:letter-bold" className="w-4 h-4 text-primary" />
-                                                Email del titular para el comprobante
+                                                Email del pagador
                                             </label>
                                             <Input
                                                 aria-label="Email del titular"
@@ -485,7 +485,7 @@ export default function BookingMercadoPagoModal({
                                                 className="bg-content1"
                                             />
                                             <p className="text-[11px] text-default-400">
-                                                Mercado Pago enviará el comprobante de pago oficial a esta dirección.
+                                                Correo asociado a la transacción para validación antifraude de la pasarela.
                                             </p>
                                         </div>
 

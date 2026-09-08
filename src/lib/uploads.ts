@@ -162,7 +162,23 @@ export async function uploadFile(file: File): Promise<string> {
     });
 
     if (!res.ok) {
-        throw new Error("No se pudo subir el archivo");
+        let errorDetail = "No se pudo subir el archivo";
+        try {
+            const errData = await res.json();
+            if (typeof errData?.detail === "string") {
+                errorDetail = errData.detail;
+            } else if (typeof errData?.error === "string") {
+                errorDetail = errData.error;
+            } else if (Array.isArray(errData?.detail)) {
+                errorDetail = errData.detail
+                    .map((item: { msg?: string }) => item.msg)
+                    .filter(Boolean)
+                    .join(", ");
+            }
+        } catch {
+            // ignore
+        }
+        throw new Error(errorDetail);
     }
 
     const data = (await res.json()) as { url: string };

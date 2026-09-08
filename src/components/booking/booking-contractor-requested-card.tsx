@@ -184,7 +184,7 @@ export default function BookingContractorRequestedCard({
                         </p>
                         <p className="text-xs text-default-600 mt-1 leading-relaxed">
                             El músico revisará los detalles y te enviará una cotización con el monto total y el anticipo requerido.
-                            Te notificaremos por correo y en la plataforma. Una vez recibida la cotización, podrás aceptarla, firmar el contrato digital y pagar de forma 100% segura con Mercado Pago.
+                            Te notificaremos en la plataforma en cuanto esté lista. Una vez recibida la cotización, podrás aceptarla, firmar el contrato digital y pagar de forma 100% segura con Mercado Pago.
                         </p>
                     </div>
                 </div>

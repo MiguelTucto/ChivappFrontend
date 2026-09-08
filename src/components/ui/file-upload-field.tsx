@@ -37,7 +37,7 @@ function isPdfUrl(url: string): boolean {
 export default function FileUploadField(props: Props) {
     const {
         label,
-        accept = "image/jpeg,image/png,image/webp,application/pdf",
+        accept = "image/jpeg,image/png,image/webp,application/pdf,.jpg,.jpeg,.png,.webp,.pdf",
         helperText,
         maxFiles = 8,
     } = props;
@@ -84,10 +84,11 @@ export default function FileUploadField(props: Props) {
                         : "El archivo se subió y optimizó correctamente.",
                 color: "success",
             });
-        } catch {
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : "No se pudo cargar el archivo.";
             addToast({
                 title: "Error al subir",
-                description: "No se pudo cargar el archivo.",
+                description: message,
                 color: "danger",
             });
         } finally {
