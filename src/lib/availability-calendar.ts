@@ -117,7 +117,7 @@ export function validateBookingAgainstAvailability(input: {
     slots: AvailabilityOut[];
 }): string | null {
     if (input.slots.length === 0) {
-        return "Este músico aún no tiene horarios de disponibilidad.";
+        return null;
     }
     if (!input.eventDate) return null;
 

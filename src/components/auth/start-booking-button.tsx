@@ -5,25 +5,16 @@ import { Button } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { useAuth } from "@/contexts/auth-context";
 import { useAuthModal } from "@/contexts/auth-modal-context";
-import { useContractorVerification } from "@/hooks/use-contractor-verification";
 import { useIsClient } from "@/hooks/use-is-client";
 
 export default function StartBookingButton() {
     const isClient = useIsClient();
     const { user, isLoading } = useAuth();
     const { openLogin } = useAuthModal();
-    const { isVerified, isLoading: isCheckingVerification } = useContractorVerification(
-        !!user && user.role === "contractor",
-        user?.is_verified ?? false,
-    );
 
     // Keep SSR and first client paint identical to avoid hydration mismatches
     // when auth resolves in the parent before this subtree hydrates.
-    if (
-        !isClient ||
-        isLoading ||
-        (user?.role === "contractor" && isCheckingVerification)
-    ) {
+    if (!isClient || isLoading) {
         return (
             <Button
                 variant="flat"
@@ -69,21 +60,6 @@ export default function StartBookingButton() {
                     explorando perfiles libremente.
                 </p>
             </div>
-        );
-    }
-
-    if (!isVerified) {
-        return (
-            <Button
-                as={Link}
-                href="/contractor/profile"
-                variant="flat"
-                radius="full"
-                className="w-full sm:w-auto max-w-sm bg-warning/20 text-foreground font-semibold"
-            >
-                <span className="sm:hidden">Verifica tu perfil</span>
-                <span className="hidden sm:inline">Verifica tu perfil para reservar</span>
-            </Button>
         );
     }
 

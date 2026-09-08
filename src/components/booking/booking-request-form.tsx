@@ -89,11 +89,6 @@ export default function BookingRequestForm({ musician, onSuccess }: Props) {
             .then((data) => {
                 if (cancelled) return;
                 setSlots(data);
-                if (data.length === 0) {
-                    setSlotsError(
-                        "Este músico aún no tiene horarios de disponibilidad publicados.",
-                    );
-                }
             })
             .catch((error) => {
                 if (cancelled) return;
@@ -114,7 +109,7 @@ export default function BookingRequestForm({ musician, onSuccess }: Props) {
     }, [musician.id]);
 
     function isDateUnavailable(date: DateValue): boolean {
-        if (availableDays.size === 0) return true;
+        if (availableDays.size === 0) return false;
         const jsDay = date.toDate(getLocalTimeZone()).getDay();
         return !availableDays.has(jsDay);
     }
@@ -204,7 +199,7 @@ export default function BookingRequestForm({ musician, onSuccess }: Props) {
     }
 
     const calendarValue = eventDate ? parseDate(eventDate) : null;
-    const canSubmit = !isLoadingSlots && slots.length > 0 && !slotsError;
+    const canSubmit = !isLoadingSlots && !slotsError;
 
     return (
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -219,6 +214,10 @@ export default function BookingRequestForm({ musician, onSuccess }: Props) {
                     </div>
                 ) : slotsError ? (
                     <p className="text-sm text-danger mt-2">{slotsError}</p>
+                ) : slots.length === 0 ? (
+                    <p className="text-sm text-default-600 mt-2">
+                        Disponibilidad flexible (el músico confirmará la fecha y hora al cotizar).
+                    </p>
                 ) : (
                     <p className="text-sm text-default-600 mt-2">{availabilitySummary}</p>
                 )}
@@ -233,11 +232,11 @@ export default function BookingRequestForm({ musician, onSuccess }: Props) {
                     value={calendarValue}
                     onChange={handleDateChange}
                     isDateUnavailable={isDateUnavailable}
-                    isDisabled={isLoadingSlots || slots.length === 0}
+                    isDisabled={isLoadingSlots}
                     description={
                         slots.length > 0
                             ? "Solo puedes elegir días en los que el músico publicó disponibilidad."
-                            : undefined
+                            : "Disponibilidad abierta: el músico revisará tu fecha al cotizar."
                     }
                 />
                 <div className="flex flex-col gap-2">
@@ -248,18 +247,22 @@ export default function BookingRequestForm({ musician, onSuccess }: Props) {
                         onValueChange={setStartTime}
                         variant="bordered"
                         isRequired
-                        isDisabled={!eventDate || daySlots.length === 0}
+                        isDisabled={!eventDate || (slots.length > 0 && daySlots.length === 0)}
                         description={
-                            daySlots.length > 0
-                                ? `Horario del día: ${daySlots
-                                      .map(
-                                          (s) =>
-                                              `${formatTimeLabel(s.start_time)}–${formatTimeLabel(s.end_time)}`,
-                                      )
-                                      .join(", ")}`
+                            slots.length > 0
+                                ? (daySlots.length > 0
+                                      ? `Horario del día: ${daySlots
+                                            .map(
+                                                (s) =>
+                                                    `${formatTimeLabel(s.start_time)}–${formatTimeLabel(s.end_time)}`,
+                                            )
+                                            .join(", ")}`
+                                      : eventDate
+                                        ? "Este día no está dentro de los horarios publicados."
+                                        : "Primero elige una fecha disponible.")
                                 : eventDate
-                                  ? "Este día no está disponible."
-                                  : "Primero elige una fecha disponible."
+                                  ? "Ingresa la hora tentativa de inicio de tu evento."
+                                  : "Primero elige una fecha."
                         }
                     />
                     {daySlots.length > 0 ? (

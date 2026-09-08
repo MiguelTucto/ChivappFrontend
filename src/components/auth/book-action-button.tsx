@@ -1,12 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { useAuth } from "@/contexts/auth-context";
 import { useAuthModal } from "@/contexts/auth-modal-context";
-import { useContractorVerification } from "@/hooks/use-contractor-verification";
 import { useIsClient } from "@/hooks/use-is-client";
 
 type Props = {
@@ -34,10 +32,6 @@ export default function BookActionButton({
     const { user, isLoading } = useAuth();
     const { openLogin } = useAuthModal();
     const pathname = usePathname();
-    const { isVerified, isLoading: isCheckingVerification } = useContractorVerification(
-        !!user && user.role === "contractor",
-        user?.is_verified ?? false,
-    );
 
     // Usa la ruta actual (slug o UUID, la que sea que esté en la barra de
     // direcciones) en vez de reconstruirla desde el id, para no "saltar" a
@@ -46,11 +40,7 @@ export default function BookActionButton({
     const widthClass = fullWidth ? "w-full" : "w-full sm:w-auto";
 
     // Keep SSR and first client paint identical to avoid hydration mismatches.
-    if (
-        !isClient ||
-        isLoading ||
-        (user?.role === "contractor" && isCheckingVerification)
-    ) {
+    if (!isClient || isLoading) {
         return (
             <Button
                 color="primary"
@@ -105,29 +95,6 @@ export default function BookActionButton({
                     <p className="text-sm text-default-500 mt-3">
                         Solo los contratistas pueden enviar solicitudes de reserva. Como
                         músico puedes explorar perfiles y gestionar tus propias reservas.
-                    </p>
-                )}
-            </div>
-        );
-    }
-
-    if (!isVerified) {
-        return (
-            <div className={fullWidth ? "w-full" : undefined}>
-                <Button
-                    as={Link}
-                    href="/contractor/profile"
-                    color="warning"
-                    radius={radius}
-                    size={size}
-                    className={`${className} ${widthClass}`}
-                >
-                    Verifica tu perfil para reservar
-                </Button>
-                {showHelper && (
-                    <p className="text-sm text-default-500 mt-3">
-                        Debes completar tu verificación de contratista antes de enviar
-                        solicitudes de reserva.
                     </p>
                 )}
             </div>

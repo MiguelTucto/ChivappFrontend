@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
-import { Input, Spinner } from "@heroui/react";
+import { Button, Input, Spinner } from "@heroui/react";
 import {
     reverseGeocode,
     searchPlaces,
@@ -144,6 +144,27 @@ export default function LocationMapPicker({ value, onChange }: Props) {
                     </ul>
                 ) : null}
             </div>
+
+            {searchQuery.trim().length >= 3 && (!value || value.address !== searchQuery.trim()) ? (
+                <Button
+                    size="sm"
+                    variant="flat"
+                    color="secondary"
+                    className="self-start text-xs font-medium"
+                    onPress={() => {
+                        const manualLocation: MapLocation = {
+                            lat: center[0],
+                            lng: center[1],
+                            address: searchQuery.trim(),
+                            city: value?.city || "Lima",
+                        };
+                        onChange(manualLocation);
+                        setSuggestions([]);
+                    }}
+                >
+                    Usar "{searchQuery.trim()}" como lugar del evento
+                </Button>
+            ) : null}
 
             <div className="relative h-56 sm:h-64 rounded-2xl overflow-hidden border border-default-200 isolate bg-default-100">
                 {isResolving ? (
