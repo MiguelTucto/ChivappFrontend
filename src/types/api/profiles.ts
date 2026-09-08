@@ -137,6 +137,14 @@ export type MusicianProfileOut = MusicianProfilePublicOut & {
     youtube_channel_url: string | null;
     spotify_url: string | null;
     website_url: string | null;
+    payout_method?: string | null;
+    payout_bank_name?: string | null;
+    payout_account_number?: string | null;
+    payout_cci?: string | null;
+    payout_phone?: string | null;
+    payout_beneficiary_name?: string | null;
+    payout_beneficiary_document?: string | null;
+    payout_mp_email?: string | null;
     created_at: string;
     updated_at: string;
 };
@@ -170,7 +178,16 @@ export type MusicianProfileCreate = {
     contract_template_title?: string | null;
     contract_template_body?: string | null;
     signature_image_url?: string | null;
+    payout_method?: string | null;
+    payout_bank_name?: string | null;
+    payout_account_number?: string | null;
+    payout_cci?: string | null;
+    payout_phone?: string | null;
+    payout_beneficiary_name?: string | null;
+    payout_beneficiary_document?: string | null;
+    payout_mp_email?: string | null;
 };
+
 
 export type MusicianProfileUpdate = Partial<MusicianProfileCreate>;
 

@@ -26,6 +26,7 @@ import { UI } from "@/lib/ui-classes";
 
 type Props = {
     redirect?: string | null;
+    oauthError?: string | null;
     defaultRole?: UserRole;
     onSwitchToLogin?: () => void;
     onSuccess?: (destination: string) => void;
@@ -33,6 +34,7 @@ type Props = {
 
 export default function RegisterForm({
     redirect = "/",
+    oauthError,
     defaultRole,
     onSwitchToLogin,
     onSuccess,
@@ -154,6 +156,15 @@ export default function RegisterForm({
 
     return (
         <div className="flex flex-col gap-4">
+            {oauthError ? (
+                <p className="text-sm text-danger rounded-xl bg-danger/10 px-3 py-2 leading-relaxed">
+                    {oauthError === "google_not_configured"
+                        ? "El registro con Google requiere configurar GOOGLE_CLIENT_ID y GOOGLE_CLIENT_SECRET en el servidor. Puedes crear tu cuenta con correo y contraseña."
+                        : oauthError === "access_denied"
+                          ? "Acceso cancelado en Google. Intenta nuevamente si deseas registrarte con tu cuenta."
+                          : "No se pudo completar el registro social. Intenta de nuevo o ingresa con tu correo."}
+                </p>
+            ) : null}
             <SocialAuthButtons intent="login" />
             <div className="flex items-center gap-3">
                 <Divider className="flex-1" />

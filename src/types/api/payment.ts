@@ -167,6 +167,17 @@ export type BookingComplaint = {
     updated_at: string;
 };
 
+export type MusicianPayoutInfoOut = {
+    payout_method?: string | null;
+    payout_bank_name?: string | null;
+    payout_account_number?: string | null;
+    payout_cci?: string | null;
+    payout_phone?: string | null;
+    payout_beneficiary_name?: string | null;
+    payout_beneficiary_document?: string | null;
+    payout_mp_email?: string | null;
+};
+
 export type AdminSettlementOut = {
     booking_id: string;
     event_type: string;
@@ -180,11 +191,17 @@ export type AdminSettlementOut = {
     platform_fee_on_retained?: number;
     currency: string;
     musician_name: string | null;
+    musician_id?: string | null;
     contractor_name: string | null;
     booking_status: string;
     settlement_state: string;
     complaint: BookingComplaint | null;
+    musician_payout_info?: MusicianPayoutInfoOut | null;
+    payout_reference?: string | null;
+    payout_evidence_url?: string | null;
+    payout_notes?: string | null;
 };
+
 
 export type ContractorExpensesItem = {
     payment_id: string;

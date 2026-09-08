@@ -2,12 +2,27 @@ function getApiUrl(): string {
     if (typeof window !== "undefined") {
         return process.env.NEXT_PUBLIC_API_URL || "/api/v1";
     }
-    return (
-        process.env.API_URL_INTERNAL ||
-        process.env.NEXT_PUBLIC_API_URL ||
-        "http://localhost:8000/api/v1"
-    );
+    if (process.env.API_URL_INTERNAL) {
+        return process.env.API_URL_INTERNAL.replace(/\/$/, "");
+    }
+    if (process.env.API_PROXY_TARGET) {
+        const base = process.env.API_PROXY_TARGET.replace(/\/$/, "");
+        return base.endsWith("/api/v1") ? base : `${base}/api/v1`;
+    }
+    if (process.env.BACKEND_URL) {
+        const base = process.env.BACKEND_URL.replace(/\/$/, "");
+        return base.endsWith("/api/v1") ? base : `${base}/api/v1`;
+    }
+    const publicUrl = process.env.NEXT_PUBLIC_API_URL;
+    if (publicUrl && (publicUrl.startsWith("http://") || publicUrl.startsWith("https://"))) {
+        return publicUrl.replace(/\/$/, "");
+    }
+    if (process.env.NODE_ENV === "production") {
+        return "https://api.chiv.app/api/v1";
+    }
+    return "http://localhost:8000/api/v1";
 }
+
 
 export class ApiError extends Error {
     constructor(

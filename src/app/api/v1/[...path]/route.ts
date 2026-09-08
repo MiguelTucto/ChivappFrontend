@@ -133,9 +133,13 @@ async function proxyRequest(request: NextRequest, pathSegments: string[]) {
     }
 
     const responseHeaders = new Headers();
+    const setCookies = typeof upstream.headers.getSetCookie === "function"
+        ? upstream.headers.getSetCookie()
+        : [];
+
     upstream.headers.forEach((value, key) => {
         const lower = key.toLowerCase();
-        if (lower === "transfer-encoding") return;
+        if (lower === "transfer-encoding" || lower === "set-cookie") return;
         // Keep any remaining API redirects on the same origin as the Next proxy.
         if (lower === "location" && value.startsWith(apiBase)) {
             responseHeaders.set(key, value.slice(apiBase.length) || "/");
@@ -143,6 +147,17 @@ async function proxyRequest(request: NextRequest, pathSegments: string[]) {
         }
         responseHeaders.append(key, value);
     });
+
+    if (setCookies.length > 0) {
+        setCookies.forEach((cookieStr) => {
+            responseHeaders.append("set-cookie", cookieStr);
+        });
+    } else {
+        const rawSetCookie = upstream.headers.get("set-cookie");
+        if (rawSetCookie) {
+            responseHeaders.append("set-cookie", rawSetCookie);
+        }
+    }
 
     return new NextResponse(upstream.body, {
         status: upstream.status,

@@ -274,6 +274,8 @@ export function settleAdminBooking(
         musician_amount: number;
         contractor_refund: number;
         notes?: string | null;
+        payout_reference?: string | null;
+        payout_evidence_url?: string | null;
     },
 ) {
     return apiFetch<import("@/types/api").AdminSettlementOut>(
@@ -284,6 +286,30 @@ export function settleAdminBooking(
         },
     );
 }
+
+export function releaseAdminSettlement(
+    bookingId: string,
+    payload: {
+        payout_reference?: string | null;
+        payout_evidence_url?: string | null;
+        payout_notes?: string | null;
+    } = {},
+) {
+    return apiFetch<import("@/types/api").AdminSettlementOut>(
+        `/admin/settlements/${bookingId}/release`,
+        {
+            method: "POST",
+            body: JSON.stringify(payload),
+        },
+    );
+}
+
+export function getAdminSettlementsExportUrl(state?: string): string {
+    const base = getApiUrl();
+    const qs = state ? `?state=${encodeURIComponent(state)}` : "";
+    return `${base}/admin/settlements/export${qs}`;
+}
+
 
 export function sendAdminRefundTransfer(
     bookingId: string,

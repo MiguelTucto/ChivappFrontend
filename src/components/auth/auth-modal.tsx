@@ -76,6 +76,7 @@ export default function AuthModal({
                                 <RegisterForm
                                     key={`register-${defaultRole ?? "none"}`}
                                     redirect={redirect}
+                                    oauthError={oauthError}
                                     defaultRole={defaultRole}
                                     onSwitchToLogin={() => onSwitchMode("login")}
                                     onSuccess={onAuthenticated}

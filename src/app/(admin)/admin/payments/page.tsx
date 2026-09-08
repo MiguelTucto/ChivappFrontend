@@ -31,6 +31,8 @@ import {
     getAdminPaymentInstructions,
     getAdminPayments,
     getAdminSettlements,
+    getAdminSettlementsExportUrl,
+    releaseAdminSettlement,
     sendAdminRefundTransfer,
     settleAdminBooking,
     updateAdminPaymentInstructions,
@@ -43,6 +45,7 @@ import type {
     AdminSettlementOut,
     PlatformPaymentInstructions,
 } from "@/types/api";
+
 
 const STATUS_FILTERS = [
     { key: "all", label: "Todos" },
@@ -92,11 +95,148 @@ export default function AdminPaymentsPage() {
     const [musicianAmount, setMusicianAmount] = useState("");
     const [contractorRefund, setContractorRefund] = useState("0");
     const [settleNotes, setSettleNotes] = useState("");
+    const [payoutReference, setPayoutReference] = useState("");
+    const [payoutEvidenceUrl, setPayoutEvidenceUrl] = useState<string | null>(null);
     const [settling, setSettling] = useState(false);
     const [refundTarget, setRefundTarget] = useState<AdminSettlementOut | null>(null);
     const [refundEvidence, setRefundEvidence] = useState<string | null>(null);
     const [refundNotes, setRefundNotes] = useState("");
     const [sendingRefund, setSendingRefund] = useState(false);
+
+    function renderMusicianPayoutCard(payout?: AdminSettlementOut["musician_payout_info"]) {
+        if (!payout || !payout.payout_method) {
+            return (
+                <div className="rounded-xl border border-warning/30 bg-warning/5 p-3 text-xs text-warning-700 flex items-center gap-2">
+                    <Icon icon="material-symbols:warning" className="text-base shrink-0" />
+                    <span>El músico aún no ha configurado sus datos de desembolso en su perfil.</span>
+                </div>
+            );
+        }
+
+        const copyToClipboard = (text: string, label: string) => {
+            navigator.clipboard.writeText(text);
+            addToast({ title: `${label} copiado al portapapeles`, color: "success" });
+        };
+
+        if (payout.payout_method === "bank_transfer") {
+            return (
+                <div className="rounded-xl border border-default-200 bg-content2/40 p-3 text-xs space-y-1.5">
+                    <div className="flex items-center justify-between gap-2">
+                        <span className="font-semibold text-foreground flex items-center gap-1.5">
+                            <Icon icon="material-symbols:account-balance" className="text-primary text-sm" />
+                            {payout.payout_bank_name || "Transferencia Bancaria"}
+                        </span>
+                        <Chip size="sm" variant="flat" color="primary">Banco / CCI</Chip>
+                    </div>
+                    {payout.payout_account_number && (
+                        <div className="flex items-center justify-between bg-content1 px-2.5 py-1 rounded-lg border border-default-200">
+                            <span className="text-default-700 font-mono text-xs">Cta: {payout.payout_account_number}</span>
+                            <Button
+                                size="sm"
+                                variant="light"
+                                isIconOnly
+                                className="h-6 w-6 min-w-6 text-default-500"
+                                onPress={() => copyToClipboard(payout.payout_account_number!, "Número de cuenta")}
+                            >
+                                <Icon icon="material-symbols:content-copy" className="text-xs" />
+                            </Button>
+                        </div>
+                    )}
+                    {payout.payout_cci && (
+                        <div className="flex items-center justify-between bg-content1 px-2.5 py-1 rounded-lg border border-default-200">
+                            <span className="text-default-700 font-mono text-xs">CCI: {payout.payout_cci}</span>
+                            <Button
+                                size="sm"
+                                variant="light"
+                                isIconOnly
+                                className="h-6 w-6 min-w-6 text-default-500"
+                                onPress={() => copyToClipboard(payout.payout_cci!, "CCI")}
+                            >
+                                <Icon icon="material-symbols:content-copy" className="text-xs" />
+                            </Button>
+                        </div>
+                    )}
+                    {(payout.payout_beneficiary_name || payout.payout_beneficiary_document) && (
+                        <p className="text-default-500 pt-0.5">
+                            Titular: <span className="text-foreground font-medium">{payout.payout_beneficiary_name || "—"}</span>
+                            {payout.payout_beneficiary_document ? ` (${payout.payout_beneficiary_document})` : ""}
+                        </p>
+                    )}
+                </div>
+            );
+        }
+
+        if (payout.payout_method === "yape_plin") {
+            return (
+                <div className="rounded-xl border border-default-200 bg-content2/40 p-3 text-xs space-y-1.5">
+                    <div className="flex items-center justify-between gap-2">
+                        <span className="font-semibold text-foreground flex items-center gap-1.5">
+                            <Icon icon="material-symbols:smartphone" className="text-secondary text-sm" />
+                            Yape / Plin
+                        </span>
+                        <Chip size="sm" variant="flat" color="secondary">Billetera móvil</Chip>
+                    </div>
+                    {payout.payout_phone && (
+                        <div className="flex items-center justify-between bg-content1 px-2.5 py-1.5 rounded-lg border border-default-200">
+                            <span className="text-foreground font-mono font-bold text-sm">{payout.payout_phone}</span>
+                            <Button
+                                size="sm"
+                                variant="light"
+                                isIconOnly
+                                className="h-6 w-6 min-w-6 text-default-500"
+                                onPress={() => copyToClipboard(payout.payout_phone!, "Teléfono")}
+                            >
+                                <Icon icon="material-symbols:content-copy" className="text-xs" />
+                            </Button>
+                        </div>
+                    )}
+                    {(payout.payout_beneficiary_name || payout.payout_beneficiary_document) && (
+                        <p className="text-default-500 pt-0.5">
+                            Titular: <span className="text-foreground font-medium">{payout.payout_beneficiary_name || "—"}</span>
+                            {payout.payout_beneficiary_document ? ` (${payout.payout_beneficiary_document})` : ""}
+                        </p>
+                    )}
+                </div>
+            );
+        }
+
+        if (payout.payout_method === "mercadopago") {
+            return (
+                <div className="rounded-xl border border-default-200 bg-content2/40 p-3 text-xs space-y-1.5">
+                    <div className="flex items-center justify-between gap-2">
+                        <span className="font-semibold text-foreground flex items-center gap-1.5">
+                            <Icon icon="material-symbols:credit-card" className="text-primary text-sm" />
+                            Mercado Pago
+                        </span>
+                        <Chip size="sm" variant="flat" color="primary">MP</Chip>
+                    </div>
+                    {payout.payout_mp_email && (
+                        <div className="flex items-center justify-between bg-content1 px-2.5 py-1 rounded-lg border border-default-200">
+                            <span className="text-default-700 font-mono text-xs">{payout.payout_mp_email}</span>
+                            <Button
+                                size="sm"
+                                variant="light"
+                                isIconOnly
+                                className="h-6 w-6 min-w-6 text-default-500"
+                                onPress={() => copyToClipboard(payout.payout_mp_email!, "Email Mercado Pago")}
+                            >
+                                <Icon icon="material-symbols:content-copy" className="text-xs" />
+                            </Button>
+                        </div>
+                    )}
+                    {payout.payout_beneficiary_name && (
+                        <p className="text-default-500 pt-0.5">
+                            Titular: <span className="text-foreground font-medium">{payout.payout_beneficiary_name}</span>
+                        </p>
+                    )}
+                </div>
+            );
+        }
+
+        return null;
+    }
+
+
 
     const load = useCallback(async () => {
         setLoading(true);
@@ -209,7 +349,9 @@ export default function AdminPaymentsPage() {
             setMusicianAmount(String(item.retained_total));
             setContractorRefund("0");
         }
-        setSettleNotes("");
+        setSettleNotes(item.payout_notes || "");
+        setPayoutReference(item.payout_reference || "");
+        setPayoutEvidenceUrl(item.payout_evidence_url || null);
     }
 
     async function handleSettle() {
@@ -226,8 +368,10 @@ export default function AdminPaymentsPage() {
                 musician_amount: musician,
                 contractor_refund: refund,
                 notes: settleNotes.trim() || null,
+                payout_reference: payoutReference.trim() || null,
+                payout_evidence_url: payoutEvidenceUrl || null,
             });
-            addToast({ title: "Liquidación registrada", color: "success" });
+            addToast({ title: "Liquidación y desembolso registrados", color: "success" });
             setSettleTarget(null);
             await load();
         } catch (error) {
@@ -240,6 +384,7 @@ export default function AdminPaymentsPage() {
             setSettling(false);
         }
     }
+
 
     function openRefundTransfer(item: AdminSettlementOut) {
         setRefundTarget(item);
@@ -380,9 +525,23 @@ export default function AdminPaymentsPage() {
                             defines tú tras las respuestas.
                         </p>
                     </div>
-                    <Chip color="warning" variant="flat">
-                        {actionable.length} pendientes
-                    </Chip>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            as="a"
+                            href={getAdminSettlementsExportUrl()}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            size="sm"
+                            variant="flat"
+                            color="default"
+                            startContent={<Icon icon="material-symbols:download" className="text-base" />}
+                        >
+                            Exportar CSV para pagos
+                        </Button>
+                        <Chip color="warning" variant="flat">
+                            {actionable.length} pendientes
+                        </Chip>
+                    </div>
                 </div>
 
                 {settlements.length === 0 ? (
@@ -469,6 +628,28 @@ export default function AdminPaymentsPage() {
                                             ) : null}
                                         </div>
                                     </div>
+
+                                    {renderMusicianPayoutCard(item.musician_payout_info)}
+
+                                    {item.payout_reference ? (
+                                        <div className="rounded-xl border border-success/30 bg-success/5 p-3 text-xs text-default-700 flex flex-wrap items-center justify-between gap-2">
+                                            <div className="flex items-center gap-1.5 font-medium text-success-700">
+                                                <Icon icon="material-symbols:check-circle" className="text-base shrink-0" />
+                                                <span>Desembolso registrado: <strong>{item.payout_reference}</strong></span>
+                                            </div>
+                                            {item.payout_evidence_url ? (
+                                                <a
+                                                    href={resolveUploadUrl(item.payout_evidence_url) || item.payout_evidence_url}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    className="underline text-primary font-medium"
+                                                >
+                                                    Ver comprobante de transferencia
+                                                </a>
+                                            ) : null}
+                                        </div>
+                                    ) : null}
+
 
                                     {item.complaint ? (
                                         <div className="rounded-xl border border-danger/20 bg-danger/5 p-3 text-sm">
@@ -695,6 +876,13 @@ export default function AdminPaymentsPage() {
                                 </span>
                             </ModalHeader>
                             <ModalBody className="gap-4">
+                                <div>
+                                    <p className="text-xs font-semibold text-default-500 uppercase tracking-wider mb-1.5">
+                                        Datos de cobro del músico
+                                    </p>
+                                    {renderMusicianPayoutCard(settleTarget?.musician_payout_info)}
+                                </div>
+
                                 {settleTarget?.complaint ? (
                                     <div className="rounded-xl border border-danger/20 bg-danger/5 p-3 text-sm">
                                         <p className="font-semibold">Queja activa</p>
@@ -734,14 +922,29 @@ export default function AdminPaymentsPage() {
                                     isRequired
                                     description="Parte del pool músico que se devolverá al contratista."
                                 />
+                                <Input
+                                    label="N° Operación / Referencia de desembolso (opcional)"
+                                    placeholder="Ej. BCP Op. 1293847 o MP #9283742"
+                                    value={payoutReference}
+                                    onValueChange={setPayoutReference}
+                                    variant="bordered"
+                                    description="Identificador de la transferencia realizada al músico."
+                                />
+                                <FileUploadField
+                                    label="Comprobante de desembolso (opcional)"
+                                    value={payoutEvidenceUrl}
+                                    onChange={setPayoutEvidenceUrl}
+                                    accept="image/jpeg,image/png,image/webp,application/pdf"
+                                />
                                 <Textarea
-                                    label="Notas internas"
+                                    label="Notas internas (opcional)"
                                     value={settleNotes}
                                     onValueChange={setSettleNotes}
                                     variant="bordered"
                                     minRows={2}
                                 />
                             </ModalBody>
+
                             <ModalFooter>
                                 <Button variant="light" onPress={onClose} isDisabled={settling}>
                                     Cancelar

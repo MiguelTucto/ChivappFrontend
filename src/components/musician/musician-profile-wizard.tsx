@@ -171,7 +171,17 @@ export default function MusicianProfileWizard() {
     const [signatureImageUrl, setSignatureImageUrl] = useState<string | null>(null);
     const [signatureDataUrl, setSignatureDataUrl] = useState<string | null>(null);
 
+    const [payoutMethod, setPayoutMethod] = useState<string>("bank_transfer");
+    const [payoutBankName, setPayoutBankName] = useState("");
+    const [payoutAccountNumber, setPayoutAccountNumber] = useState("");
+    const [payoutCci, setPayoutCci] = useState("");
+    const [payoutPhone, setPayoutPhone] = useState("");
+    const [payoutBeneficiaryName, setPayoutBeneficiaryName] = useState("");
+    const [payoutBeneficiaryDocument, setPayoutBeneficiaryDocument] = useState("");
+    const [payoutMpEmail, setPayoutMpEmail] = useState("");
+
     const [availabilityDay, setAvailabilityDay] = useState("1");
+
     const [availabilityStart, setAvailabilityStart] = useState("18:00");
     const [availabilityEnd, setAvailabilityEnd] = useState("22:00");
 
@@ -272,6 +282,14 @@ export default function MusicianProfileWizard() {
         setIdDocumentUrl(profileData.id_document_url);
         setSignatureImageUrl(profileData.signature_image_url);
         setSignatureDataUrl(null);
+        setPayoutMethod(profileData.payout_method || "bank_transfer");
+        setPayoutBankName(profileData.payout_bank_name || "");
+        setPayoutAccountNumber(profileData.payout_account_number || "");
+        setPayoutCci(profileData.payout_cci || "");
+        setPayoutPhone(profileData.payout_phone || "");
+        setPayoutBeneficiaryName(profileData.payout_beneficiary_name || "");
+        setPayoutBeneficiaryDocument(profileData.payout_beneficiary_document || "");
+        setPayoutMpEmail(profileData.payout_mp_email || "");
         const normalizedBody = normalizeContractBodyToHtml(profileData.contract_template_body);
         const fallbackTitle =
             profileData.contract_template_title ||
@@ -325,8 +343,17 @@ export default function MusicianProfileWizard() {
             contract_template_title: contractTitle,
             contract_template_body: contractBody,
             signature_image_url: signatureImageUrl,
+            payout_method: payoutMethod || null,
+            payout_bank_name: payoutBankName.trim() || null,
+            payout_account_number: payoutAccountNumber.trim() || null,
+            payout_cci: payoutCci.trim() || null,
+            payout_phone: payoutPhone.trim() || null,
+            payout_beneficiary_name: payoutBeneficiaryName.trim() || null,
+            payout_beneficiary_document: payoutBeneficiaryDocument.trim() || null,
+            payout_mp_email: payoutMpEmail.trim() || null,
         };
     }
+
 
     async function resolveSignatureForSave(): Promise<string | null> {
         if (signatureDataUrl) {
@@ -828,8 +855,149 @@ export default function MusicianProfileWizard() {
                             variant="bordered"
                             placeholder="Describe el tipo de eventos en los que sueles participar."
                         />
+
+                        <div className="border-t border-default-200/80 pt-5 mt-2 flex flex-col gap-4">
+                            <div className="flex flex-col gap-1">
+                                <h3 className="text-base font-semibold text-foreground flex items-center gap-2">
+                                    <Icon
+                                        icon="material-symbols:account-balance-wallet"
+                                        className="text-primary text-xl"
+                                    />
+                                    Datos para recibir tus pagos (Desembolsos)
+                                </h3>
+                                <p className="text-sm text-default-500">
+                                    Configura la cuenta donde Chivapp te transferirá el dinero de tus presentaciones una vez finalizado el evento. Esta información es confidencial.
+                                </p>
+                            </div>
+
+                            <Select
+                                label="Método de cobro preferido"
+                                selectedKeys={[payoutMethod]}
+                                onSelectionChange={(keys) => {
+                                    const val = Array.from(keys)[0]?.toString();
+                                    if (val) setPayoutMethod(val);
+                                }}
+                                variant="bordered"
+                            >
+                                <SelectItem
+                                    key="bank_transfer"
+                                    startContent={<Icon icon="material-symbols:account-balance" className="text-lg text-default-600" />}
+                                >
+                                    Transferencia bancaria / CCI
+                                </SelectItem>
+                                <SelectItem
+                                    key="yape_plin"
+                                    startContent={<Icon icon="material-symbols:smartphone" className="text-lg text-default-600" />}
+                                >
+                                    Billetera móvil (Yape / Plin)
+                                </SelectItem>
+                                <SelectItem
+                                    key="mercadopago"
+                                    startContent={<Icon icon="material-symbols:credit-card" className="text-lg text-default-600" />}
+                                >
+                                    Cuenta Mercado Pago
+                                </SelectItem>
+                            </Select>
+
+                            {payoutMethod === "bank_transfer" && (
+                                <div className="flex flex-col gap-4 p-4 rounded-2xl bg-default-50/50 border border-default-200">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <Input
+                                            label="Banco"
+                                            placeholder="Ej. BCP, BBVA, Interbank, Scotiabank"
+                                            value={payoutBankName}
+                                            onValueChange={setPayoutBankName}
+                                            variant="bordered"
+                                        />
+                                        <Input
+                                            label="Número de cuenta bancaria"
+                                            placeholder="Ej. 193-xxxxxxxx-x-xx"
+                                            value={payoutAccountNumber}
+                                            onValueChange={setPayoutAccountNumber}
+                                            variant="bordered"
+                                        />
+                                    </div>
+                                    <Input
+                                        label="Código de Cuenta Interbancario (CCI)"
+                                        placeholder="20 dígitos (ej. 002193xxxxxxxxxxxxxx)"
+                                        value={payoutCci}
+                                        onValueChange={setPayoutCci}
+                                        variant="bordered"
+                                        description="Recomendado para transferencias inmediatas desde cualquier entidad."
+                                    />
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <Input
+                                            label="Nombre del titular de la cuenta"
+                                            placeholder="Nombre completo o razón social"
+                                            value={payoutBeneficiaryName}
+                                            onValueChange={setPayoutBeneficiaryName}
+                                            variant="bordered"
+                                        />
+                                        <Input
+                                            label="DNI o RUC del titular"
+                                            placeholder="Ej. 72345678 o 20601234567"
+                                            value={payoutBeneficiaryDocument}
+                                            onValueChange={setPayoutBeneficiaryDocument}
+                                            variant="bordered"
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
+                            {payoutMethod === "yape_plin" && (
+                                <div className="flex flex-col gap-4 p-4 rounded-2xl bg-default-50/50 border border-default-200">
+                                    <Input
+                                        label="Número de celular registrado en Yape / Plin"
+                                        placeholder="987654321"
+                                        value={payoutPhone}
+                                        onValueChange={setPayoutPhone}
+                                        variant="bordered"
+                                        type="tel"
+                                        maxLength={15}
+                                        startContent={<span className="text-default-400 text-sm font-semibold">+51</span>}
+                                    />
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <Input
+                                            label="Nombre del titular en Yape / Plin"
+                                            placeholder="Tal como aparece registrado"
+                                            value={payoutBeneficiaryName}
+                                            onValueChange={setPayoutBeneficiaryName}
+                                            variant="bordered"
+                                        />
+                                        <Input
+                                            label="DNI del titular"
+                                            placeholder="Ej. 72345678"
+                                            value={payoutBeneficiaryDocument}
+                                            onValueChange={setPayoutBeneficiaryDocument}
+                                            variant="bordered"
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
+                            {payoutMethod === "mercadopago" && (
+                                <div className="flex flex-col gap-4 p-4 rounded-2xl bg-default-50/50 border border-default-200">
+                                    <Input
+                                        label="Correo electrónico de Mercado Pago"
+                                        placeholder="usuario@ejemplo.com"
+                                        value={payoutMpEmail}
+                                        onValueChange={setPayoutMpEmail}
+                                        variant="bordered"
+                                        type="email"
+                                    />
+                                    <Input
+                                        label="Nombre del titular de la cuenta"
+                                        placeholder="Nombre registrado en Mercado Pago"
+                                        value={payoutBeneficiaryName}
+                                        onValueChange={setPayoutBeneficiaryName}
+                                        variant="bordered"
+                                    />
+                                </div>
+                            )}
+                        </div>
                     </div>
                 );
+
 
             case "repertoire":
                 return (

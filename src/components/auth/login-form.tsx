@@ -86,8 +86,14 @@ export default function LoginForm({
     return (
         <div className="flex flex-col gap-4">
             {oauthError ? (
-                <p className="text-sm text-danger rounded-xl bg-danger/10 px-3 py-2">
-                    No se pudo completar el acceso social. Intenta de nuevo.
+                <p className="text-sm text-danger rounded-xl bg-danger/10 px-3 py-2 leading-relaxed">
+                    {oauthError === "google_not_configured"
+                        ? "El inicio de sesión con Google requiere configurar GOOGLE_CLIENT_ID y GOOGLE_CLIENT_SECRET en el servidor. Puedes ingresar con tu correo y contraseña."
+                        : oauthError === "access_denied"
+                          ? "Acceso cancelado en Google. Intenta nuevamente si deseas ingresar con tu cuenta."
+                          : oauthError === "pending_expired"
+                            ? "El registro social expiró. Por favor intenta iniciar sesión con Google nuevamente."
+                            : "No se pudo completar el acceso social. Intenta de nuevo o ingresa con tu correo."}
                 </p>
             ) : null}
             <SocialAuthButtons intent="login" />
