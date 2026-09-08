@@ -128,6 +128,11 @@ export default function BookingMercadoPagoModal({
                                 throw new Error(msg);
                             }
 
+                            const cardAmount =
+                                formData.transaction_amount != null
+                                    ? Number(formData.transaction_amount)
+                                    : Math.max(1, Number(Number(amount).toFixed(2)) || 1);
+
                             setIsProcessing(true);
                             setProcessError(null);
                             try {
@@ -142,7 +147,7 @@ export default function BookingMercadoPagoModal({
                                     identification_type: idType,
                                     identification_number: idNumber,
                                     signature_image_url: signatureImageUrl,
-                                    amount: amount,
+                                    amount: cardAmount,
                                 });
 
                                 if (res.success && res.status === "approved") {
@@ -242,6 +247,8 @@ export default function BookingMercadoPagoModal({
                 otp: cleanOtp,
             });
 
+            const yapeAmount = Math.max(1, Number(Number(amount).toFixed(2)) || 1);
+
             // 2. Procesar el pago en nuestro backend
             const res = await processMercadoPagoPayment({
                 booking_id: booking.id,
@@ -249,7 +256,7 @@ export default function BookingMercadoPagoModal({
                 token: token,
                 payment_method_id: "yape",
                 signature_image_url: signatureImageUrl,
-                amount: amount,
+                amount: yapeAmount,
             });
 
             if (res.success && res.status === "approved") {
