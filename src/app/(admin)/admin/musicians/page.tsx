@@ -18,6 +18,7 @@ import {
     addToast,
     useDisclosure,
 } from "@heroui/react";
+import { Icon } from "@iconify/react";
 import AdminPageHeader from "@/components/admin/admin-page-header";
 import {
     approveMusicianProfile,
@@ -293,25 +294,76 @@ export default function AdminMusiciansPage() {
                                 {selected.instruments.join(", ")}
                             </p>
                         </div>
-                        {selected.id_document_url ? (
-                            <a
-                                href={resolveUploadUrl(selected.id_document_url) ?? "#"}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="text-primary underline text-sm"
-                            >
-                                Ver documento de identidad
-                            </a>
-                        ) : null}
-                        {selected.contract_pdf_url ? (
-                            <a
-                                href={resolveUploadUrl(selected.contract_pdf_url) ?? "#"}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="text-primary underline text-sm"
-                            >
-                                Ver contrato PDF
-                            </a>
+                        <div className="flex flex-wrap gap-3 pt-2">
+                            {selected.id_document_url ? (
+                                <a
+                                    href={resolveUploadUrl(selected.id_document_url) ?? "#"}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="inline-flex items-center gap-2 rounded-xl border border-default-200 bg-default-50 px-3 py-2 text-sm font-medium text-primary hover:bg-default-100 transition-colors"
+                                >
+                                    <Icon icon="material-symbols:badge-outline" width={18} />
+                                    <span>Ver documento de identidad</span>
+                                    <Icon icon="material-symbols:open-in-new" width={14} className="text-default-400" />
+                                </a>
+                            ) : null}
+                            {selected.contract_pdf_url ? (
+                                <a
+                                    href={resolveUploadUrl(selected.contract_pdf_url) ?? "#"}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="inline-flex items-center gap-2 rounded-xl border border-default-200 bg-default-50 px-3 py-2 text-sm font-medium text-primary hover:bg-default-100 transition-colors"
+                                >
+                                    <Icon icon="material-symbols:picture-as-pdf" width={18} className="text-danger" />
+                                    <span>Ver contrato PDF</span>
+                                    <Icon icon="material-symbols:open-in-new" width={14} className="text-default-400" />
+                                </a>
+                            ) : null}
+                            {selected.profile_image_url ? (
+                                <a
+                                    href={resolveUploadUrl(selected.profile_image_url) ?? "#"}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="inline-flex items-center gap-2 rounded-xl border border-default-200 bg-default-50 px-3 py-2 text-sm font-medium text-primary hover:bg-default-100 transition-colors"
+                                >
+                                    <Icon icon="material-symbols:image-outline" width={18} />
+                                    <span>Ver foto de perfil</span>
+                                    <Icon icon="material-symbols:open-in-new" width={14} className="text-default-400" />
+                                </a>
+                            ) : null}
+                        </div>
+                        {selected.gallery_images && selected.gallery_images.length > 0 ? (
+                            <div className="flex flex-col gap-1.5 pt-2">
+                                <p className="text-xs font-semibold text-default-500 uppercase tracking-wide">
+                                    Galería ({selected.gallery_images.length})
+                                </p>
+                                <div className="flex flex-wrap gap-2">
+                                    {selected.gallery_images.map((gUrl, idx) => {
+                                        const resolvedGUrl = resolveUploadUrl(gUrl);
+                                        if (!resolvedGUrl) return null;
+                                        return (
+                                            <a
+                                                key={`${gUrl}-${idx}`}
+                                                href={resolvedGUrl}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="group relative h-14 w-14 overflow-hidden rounded-lg border border-default-200"
+                                                title="Ver foto en tamaño completo"
+                                            >
+                                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                <img
+                                                    src={resolvedGUrl}
+                                                    alt={`Galería ${idx + 1}`}
+                                                    className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                                                />
+                                                <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 transition-opacity group-hover:opacity-100">
+                                                    <Icon icon="material-symbols:open-in-new" width={14} className="text-white" />
+                                                </div>
+                                            </a>
+                                        );
+                                    })}
+                                </div>
+                            </div>
                         ) : null}
                         {selected.status === "published" ? (
                             <div className="flex flex-wrap gap-2 pt-2">

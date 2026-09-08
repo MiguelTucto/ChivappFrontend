@@ -18,6 +18,7 @@ import {
     addToast,
     useDisclosure,
 } from "@heroui/react";
+import { Icon } from "@iconify/react";
 import AdminPageHeader from "@/components/admin/admin-page-header";
 import {
     approveContractorProfile,
@@ -301,16 +302,20 @@ export default function AdminContractorsPage() {
                                 {selected.address || "—"}
                             </p>
                         </div>
-                        {selected.id_document_url ? (
-                            <a
-                                href={resolveUploadUrl(selected.id_document_url) ?? "#"}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="text-primary underline text-sm"
-                            >
-                                Ver documento de identidad
-                            </a>
-                        ) : null}
+                        <div className="flex flex-wrap gap-3 pt-2">
+                            {selected.id_document_url ? (
+                                <a
+                                    href={resolveUploadUrl(selected.id_document_url) ?? "#"}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="inline-flex items-center gap-2 rounded-xl border border-default-200 bg-default-50 px-3 py-2 text-sm font-medium text-primary hover:bg-default-100 transition-colors"
+                                >
+                                    <Icon icon="material-symbols:badge-outline" width={18} />
+                                    <span>Ver documento de identidad</span>
+                                    <Icon icon="material-symbols:open-in-new" width={14} className="text-default-400" />
+                                </a>
+                            ) : null}
+                        </div>
                         {selected.status === "published" ? (
                             <div className="flex flex-wrap gap-2 pt-2">
                                 <Button

@@ -163,34 +163,60 @@ export default function FileUploadField(props: Props) {
                                 className="flex items-center gap-3 rounded-xl border border-default-200 bg-default-50/70 px-3 py-2"
                             >
                                 {showImage ? (
-                                    // eslint-disable-next-line @next/next/no-img-element
-                                    <img
-                                        src={previewUrl}
-                                        alt={`${label} ${index + 1}`}
-                                        className="h-16 w-16 rounded-lg object-cover border border-default-200 shrink-0"
-                                    />
+                                    <a
+                                        href={previewUrl}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="group relative block h-16 w-16 shrink-0 overflow-hidden rounded-lg border border-default-200"
+                                        title="Clic para abrir imagen en tamaño completo"
+                                    >
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img
+                                            src={previewUrl}
+                                            alt={`${label} ${index + 1}`}
+                                            className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                                        />
+                                        <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 transition-opacity group-hover:opacity-100">
+                                            <Icon
+                                                icon="material-symbols:open-in-new"
+                                                width={16}
+                                                className="text-white"
+                                            />
+                                        </div>
+                                    </a>
                                 ) : (
-                                    <div className="flex h-16 w-16 items-center justify-center rounded-lg border border-default-200 bg-white shrink-0">
+                                    <a
+                                        href={previewUrl}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="flex h-16 w-16 items-center justify-center rounded-lg border border-default-200 bg-white shrink-0 hover:bg-default-100 transition-colors"
+                                        title="Clic para abrir documento"
+                                    >
                                         <Icon
                                             icon="material-symbols:picture-as-pdf"
                                             width={28}
                                             className="text-danger"
                                         />
-                                    </div>
+                                    </a>
                                 )}
                                 <div className="min-w-0 flex-1">
                                     <a
                                         href={previewUrl}
                                         target="_blank"
                                         rel="noreferrer"
-                                        className="text-sm text-primary underline truncate block"
+                                        className="text-sm font-medium text-primary hover:underline truncate inline-flex items-center gap-1"
                                     >
                                         {multiple
                                             ? `Archivo ${index + 1}`
                                             : "Ver documento cargado"}
+                                        <Icon
+                                            icon="material-symbols:open-in-new"
+                                            width={14}
+                                            className="shrink-0"
+                                        />
                                     </a>
                                     <p className="text-xs text-default-500 mt-0.5">
-                                        Optimizado para peso reducido
+                                        Clic para abrir en una pestaña nueva
                                     </p>
                                 </div>
                                 <Button

@@ -1,6 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const API_BASE = process.env.API_PROXY_TARGET || "http://localhost:8000";
+function getUpstreamBase(request?: NextRequest): string {
+    if (process.env.API_PROXY_TARGET) {
+        return process.env.API_PROXY_TARGET.replace(/\/$/, "");
+    }
+    if (process.env.BACKEND_URL) {
+        return process.env.BACKEND_URL.replace(/\/$/, "");
+    }
+    const host = request?.headers.get("host") || "";
+    if (host.includes("chiv.app")) {
+        return "https://api.chiv.app";
+    }
+    return "http://localhost:8000";
+}
 
 async function fetchUpstream(
     targetUrl: string,
@@ -19,18 +31,19 @@ function resolveRedirectUrl(currentUrl: string, location: string): string | null
 }
 
 /** Next strips trailing slashes; FastAPI often requires them — resolve that here. */
-function isInternalSlashRedirect(fromUrl: string, toUrl: string): boolean {
-    if (!toUrl.startsWith(API_BASE)) return false;
+function isInternalSlashRedirect(fromUrl: string, toUrl: string, apiBase: string): boolean {
+    if (!toUrl.startsWith(apiBase)) return false;
     const from = fromUrl.replace(/\/+$/, "");
     const to = toUrl.replace(/\/+$/, "");
     return from === to;
 }
 
 async function proxyRequest(request: NextRequest, pathSegments: string[]) {
+    const apiBase = getUpstreamBase(request);
     const hasTrailingSlash = request.nextUrl.pathname.endsWith("/");
     const path = pathSegments.join("/") + (hasTrailingSlash ? "/" : "");
     const search = request.nextUrl.search;
-    let targetUrl = `${API_BASE}/api/v1/${path}${search}`;
+    let targetUrl = `${apiBase}/api/v1/${path}${search}`;
 
     const headers = new Headers();
     const contentType = request.headers.get("content-type");
@@ -75,7 +88,7 @@ async function proxyRequest(request: NextRequest, pathSegments: string[]) {
             const location = upstream.headers.get("location");
             if (!location) break;
             const nextUrl = resolveRedirectUrl(targetUrl, location);
-            if (!nextUrl || !isInternalSlashRedirect(targetUrl, nextUrl)) break;
+            if (!nextUrl || !isInternalSlashRedirect(targetUrl, nextUrl, apiBase)) break;
 
             targetUrl = nextUrl;
             upstream = await fetchUpstream(targetUrl, {
@@ -99,8 +112,8 @@ async function proxyRequest(request: NextRequest, pathSegments: string[]) {
         const lower = key.toLowerCase();
         if (lower === "transfer-encoding") return;
         // Keep any remaining API redirects on the same origin as the Next proxy.
-        if (lower === "location" && value.startsWith(API_BASE)) {
-            responseHeaders.set(key, value.slice(API_BASE.length) || "/");
+        if (lower === "location" && value.startsWith(apiBase)) {
+            responseHeaders.set(key, value.slice(apiBase.length) || "/");
             return;
         }
         responseHeaders.append(key, value);
