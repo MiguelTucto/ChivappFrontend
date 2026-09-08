@@ -69,7 +69,7 @@ export function toAbsoluteUploadUrl(url: string | null | undefined): string | nu
     if (typeof window === "undefined") {
         const site =
             process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-            "http://localhost:3000";
+            (process.env.NODE_ENV === "production" ? "https://chiv.app" : "http://localhost:3000");
         return `${site}${resolved.startsWith("/") ? resolved : `/${resolved}`}`;
     }
     return `${window.location.origin}${resolved.startsWith("/") ? resolved : `/${resolved}`}`;

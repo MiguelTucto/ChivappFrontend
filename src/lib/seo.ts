@@ -13,6 +13,10 @@ export function getSiteUrl(): string {
     const vercel = process.env.VERCEL_URL?.trim();
     if (vercel) return `https://${vercel.replace(/\/$/, "")}`;
 
+    if (process.env.NODE_ENV === "production") {
+        return "https://chiv.app";
+    }
+
     return "http://localhost:3000";
 }
 
@@ -101,6 +105,25 @@ export function websiteJsonLd() {
             "@type": "Organization",
             name: SITE_NAME,
             url,
+            logo: absoluteUrl("/logo-chivapp.png"),
+        },
+    };
+}
+
+export function organizationJsonLd() {
+    const url = getSiteUrl();
+    return {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        name: SITE_NAME,
+        url,
+        logo: absoluteUrl("/logo-chivapp.png"),
+        description: SITE_DESCRIPTION,
+        contactPoint: {
+            "@type": "ContactPoint",
+            contactType: "customer service",
+            email: "soporte@chiv.app",
+            availableLanguage: ["es"],
         },
     };
 }
@@ -113,14 +136,14 @@ export function musicianJsonLd(input: {
     genres?: string[];
     city?: string | null;
 }) {
-    const image = absoluteImageUrl(input.image);
+    const image = absoluteImageUrl(input.image) ?? absoluteUrl("/logo-chivapp.png");
     return {
         "@context": "https://schema.org",
         "@type": "MusicGroup",
         name: input.name,
         description: input.description,
         url: absoluteUrl(input.path),
-        ...(image ? { image } : {}),
+        image,
         ...(input.genres?.length ? { genre: input.genres } : {}),
         ...(input.city
             ? {

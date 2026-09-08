@@ -8,6 +8,7 @@ import {
     SITE_TAGLINE,
     getSiteUrl,
     websiteJsonLd,
+    organizationJsonLd,
 } from "@/lib/seo";
 
 export const viewport: Viewport = {
@@ -74,11 +75,26 @@ export const metadata: Metadata = {
         title: SITE_NAME,
         description: SITE_TAGLINE,
         url: "/",
+        images: [
+            {
+                url: "/logo-chivapp.png",
+                width: 900,
+                height: 287,
+                alt: `${SITE_NAME} — ${SITE_TAGLINE}`,
+            },
+            {
+                url: "/opengraph-image",
+                width: 1200,
+                height: 630,
+                alt: SITE_NAME,
+            },
+        ],
     },
     twitter: {
         card: "summary_large_image",
         title: SITE_NAME,
         description: SITE_TAGLINE,
+        images: ["/logo-chivapp.png"],
     },
     robots: {
         index: true,
@@ -99,6 +115,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     const jsonLd = websiteJsonLd();
+    const orgJsonLd = organizationJsonLd();
 
     return (
         <html
@@ -112,6 +129,12 @@ export default function RootLayout({
                     type="application/ld+json"
                     dangerouslySetInnerHTML={{
                         __html: JSON.stringify(jsonLd),
+                    }}
+                />
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify(orgJsonLd),
                     }}
                 />
                 <Providers>

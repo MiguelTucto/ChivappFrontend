@@ -119,8 +119,15 @@ export function createMercadoPagoPreference(payload: MercadoPagoPreferenceReques
     });
 }
 
-export function checkMercadoPagoPaymentStatus(bookingId: string, paymentId?: string | null) {
-    const query = paymentId ? `?payment_id=${encodeURIComponent(paymentId)}` : "";
+export function checkMercadoPagoPaymentStatus(
+    bookingId: string,
+    paymentId?: string | null,
+    collectionId?: string | null,
+) {
+    const params = new URLSearchParams();
+    if (paymentId) params.set("payment_id", paymentId);
+    if (collectionId) params.set("collection_id", collectionId);
+    const query = params.toString() ? `?${params.toString()}` : "";
     return apiFetch<MercadoPagoPaymentCheckResponse>(
         `/payments/mercadopago/check-status/${bookingId}${query}`,
     );

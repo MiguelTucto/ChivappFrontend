@@ -82,6 +82,20 @@ async function proxyRequest(request: NextRequest, pathSegments: string[]) {
         headers.set("x-forwarded-for", forwardedFor);
     }
 
+    // Cabeceras de pasarela de pago (Webhooks de Mercado Pago, firmas HMAC e idempotencia)
+    const xSignature = request.headers.get("x-signature");
+    if (xSignature) {
+        headers.set("x-signature", xSignature);
+    }
+    const xRequestId = request.headers.get("x-request-id");
+    if (xRequestId) {
+        headers.set("x-request-id", xRequestId);
+    }
+    const xIdempotencyKey = request.headers.get("x-idempotency-key");
+    if (xIdempotencyKey) {
+        headers.set("x-idempotency-key", xIdempotencyKey);
+    }
+
     const hasBody = !["GET", "HEAD"].includes(request.method);
     const body = hasBody ? await request.arrayBuffer() : undefined;
 

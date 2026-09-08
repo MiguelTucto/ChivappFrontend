@@ -10,6 +10,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             changeFrequency: "daily",
             priority: 1,
         },
+        {
+            url: absoluteUrl("/musicians"),
+            lastModified: new Date(),
+            changeFrequency: "daily",
+            priority: 0.9,
+        },
+        {
+            url: absoluteUrl("/legal/terminos"),
+            lastModified: new Date(),
+            changeFrequency: "monthly",
+            priority: 0.3,
+        },
+        {
+            url: absoluteUrl("/legal/privacidad"),
+            lastModified: new Date(),
+            changeFrequency: "monthly",
+            priority: 0.3,
+        },
     ];
 
     let musicianRoutes: MetadataRoute.Sitemap = [];

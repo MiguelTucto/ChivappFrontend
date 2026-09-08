@@ -104,16 +104,19 @@ export default function BookingDetailView({ bookingId, role }: Props) {
             searchParams.get("mp_status") ||
             searchParams.get("collection_status") ||
             searchParams.get("status");
-        const paymentId =
-            searchParams.get("payment_id") ||
-            searchParams.get("collection_id");
+        const paymentId = searchParams.get("payment_id");
+        const collectionId = searchParams.get("collection_id");
 
         if (mpStatus && !checkedMpRef.current) {
             checkedMpRef.current = true;
             router.replace(pathname);
 
             if (mpStatus === "approved") {
-                checkMercadoPagoPaymentStatus(bookingId, paymentId || undefined)
+                checkMercadoPagoPaymentStatus(
+                    bookingId,
+                    paymentId || undefined,
+                    collectionId || undefined,
+                )
                     .then(async (res) => {
                         try {
                             const updated = await getBooking(bookingId);
