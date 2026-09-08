@@ -364,7 +364,7 @@ export default function AdminPaymentsPage() {
                         {instructions?.updated_at ? (
                             <p className="text-xs text-default-400">
                                 Última actualización:{" "}
-                                {new Date(instructions.updated_at).toLocaleString("es-PE")}
+                                {new Date(instructions.updated_at).toLocaleString("es-PE", { timeZone: "America/Lima" })}
                             </p>
                         ) : null}
                     </form>
@@ -616,6 +616,7 @@ export default function AdminPaymentsPage() {
                                         <p className="text-xs text-default-500">
                                             {new Date(payment.created_at).toLocaleString(
                                                 "es-PE",
+                                                { timeZone: "America/Lima" },
                                             )}
                                         </p>
                                     </div>

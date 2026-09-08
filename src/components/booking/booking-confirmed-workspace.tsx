@@ -403,7 +403,7 @@ export default function BookingConfirmedWorkspace({
                                                 {message.sender_name ?? "Usuario"} ·{" "}
                                                 {new Date(
                                                     message.created_at,
-                                                ).toLocaleString("es-PE")}
+                                                ).toLocaleString("es-PE", { timeZone: "America/Lima" })}
                                             </p>
                                             <p>{message.body}</p>
                                         </div>

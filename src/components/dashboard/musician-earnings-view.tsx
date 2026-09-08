@@ -108,6 +108,7 @@ const MEMBER_PAYOUT_LABEL: Record<string, string> = {
 function formatDateTime(value: string | null | undefined): string {
     if (!value) return "—";
     return new Date(value).toLocaleString("es-PE", {
+        timeZone: "America/Lima",
         day: "2-digit",
         month: "short",
         year: "numeric",

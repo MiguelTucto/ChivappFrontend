@@ -167,7 +167,7 @@ export default function NotificationsListView() {
                                                 <p className="text-xs text-default-400 mt-2">
                                                     {new Date(
                                                         notification.created_at,
-                                                    ).toLocaleString("es-PE")}
+                                                    ).toLocaleString("es-PE", { timeZone: "America/Lima" })}
                                                 </p>
                                             </div>
                                         </div>

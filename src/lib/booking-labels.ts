@@ -135,7 +135,8 @@ export function isConfirmedBookingStatus(status: BookingStatus): boolean {
 }
 
 export function formatBookingDate(date: string): string {
-    return new Date(`${date}T12:00:00`).toLocaleDateString("es-PE", {
+    return new Date(`${date}T12:00:00-05:00`).toLocaleDateString("es-PE", {
+        timeZone: "America/Lima",
         weekday: "long",
         day: "numeric",
         month: "long",
@@ -157,6 +158,7 @@ export function formatCurrency(amount: number): string {
 export function formatQuotedAt(date: string | null): string | null {
     if (!date) return null;
     return new Date(date).toLocaleString("es-PE", {
+        timeZone: "America/Lima",
         day: "numeric",
         month: "short",
         year: "numeric",
@@ -166,7 +168,7 @@ export function formatQuotedAt(date: string | null): string | null {
 }
 
 export function getEventDateTime(eventDate: string, startTime: string): Date {
-    return new Date(`${eventDate}T${startTime.slice(0, 8)}`);
+    return new Date(`${eventDate}T${startTime.slice(0, 8)}-05:00`);
 }
 
 export function isEventUpcoming(eventDate: string, startTime: string): boolean {

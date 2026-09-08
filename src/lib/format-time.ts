@@ -11,7 +11,15 @@ const rtf = new Intl.RelativeTimeFormat("es", { numeric: "auto" });
 
 /** "hace 5 min", "hace 3 h", "hace 2 días"… a partir de un ISO string pasado. */
 export function formatRelativeTime(dateStr: string): string {
-    const date = new Date(dateStr);
+    if (!dateStr) return "—";
+    const normalized =
+        typeof dateStr === "string" &&
+        !dateStr.endsWith("Z") &&
+        !dateStr.includes("+") &&
+        !/[+-]\d{2}:\d{2}$/.test(dateStr)
+            ? `${dateStr.replace(" ", "T")}-05:00`
+            : dateStr;
+    const date = new Date(normalized);
     if (Number.isNaN(date.getTime())) return "—";
 
     const seconds = (Date.now() - date.getTime()) / 1000;

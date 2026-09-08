@@ -47,7 +47,7 @@ export default function BookingMercadoPagoModal({
     const [selectedTab, setSelectedTab] = useState<string>("yape");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [otp, setOtp] = useState("");
-    const [cardPayerEmail, setCardPayerEmail] = useState<string>(user?.email || "test@testuser.com");
+    const [cardPayerEmail, setCardPayerEmail] = useState<string>(user?.email || "");
     const cardPayerEmailRef = useRef(cardPayerEmail);
     useEffect(() => {
         cardPayerEmailRef.current = cardPayerEmail;
@@ -283,7 +283,7 @@ export default function BookingMercadoPagoModal({
                 payment_type: paymentType,
                 signature_image_url: signatureImageUrl,
             });
-            const redirectUrl = pref.sandbox_init_point || pref.init_point;
+            const redirectUrl = pref.init_point || pref.sandbox_init_point;
             if (redirectUrl) {
                 window.location.href = redirectUrl;
             } else {
@@ -470,22 +470,14 @@ export default function BookingMercadoPagoModal({
                                         </p>
 
                                         <div className="flex flex-col gap-1.5 bg-default-50 p-3 rounded-xl border border-default-200">
-                                            <div className="flex items-center justify-between">
-                                                <label className="text-xs font-semibold text-default-700 flex items-center gap-1.5">
-                                                    <Icon icon="solar:letter-bold" className="w-4 h-4 text-primary" />
-                                                    Email del titular / pagador
-                                                </label>
-                                                <button
-                                                    type="button"
-                                                    className="text-[11px] text-primary hover:underline font-medium"
-                                                    onClick={() => setCardPayerEmail("test@testuser.com")}
-                                                >
-                                                    Usar test@testuser.com
-                                                </button>
-                                            </div>
+                                            <label className="text-xs font-semibold text-default-700 flex items-center gap-1.5">
+                                                <Icon icon="solar:letter-bold" className="w-4 h-4 text-primary" />
+                                                Email del titular para el comprobante
+                                            </label>
                                             <Input
                                                 aria-label="Email del titular"
-                                                placeholder="ej. test@testuser.com o tu email"
+                                                placeholder="tu.correo@ejemplo.com"
+                                                type="email"
                                                 value={cardPayerEmail}
                                                 onValueChange={setCardPayerEmail}
                                                 variant="bordered"
@@ -493,7 +485,7 @@ export default function BookingMercadoPagoModal({
                                                 className="bg-content1"
                                             />
                                             <p className="text-[11px] text-default-400">
-                                                Para tarjetas de prueba usa <span className="font-mono text-primary font-medium">test@testuser.com</span> o el usuario de prueba de tu panel.
+                                                Mercado Pago enviará el comprobante de pago oficial a esta dirección.
                                             </p>
                                         </div>
 

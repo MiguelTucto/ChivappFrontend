@@ -229,7 +229,7 @@ export default function ContractDocumentView({
                                 {contract.musician_sign_timestamp
                                     ? ` · ${new Date(
                                           contract.musician_sign_timestamp,
-                                      ).toLocaleString("es-PE")}`
+                                      ).toLocaleString("es-PE", { timeZone: "America/Lima" })}`
                                     : ""}
                             </p>
                         ) : (
@@ -243,7 +243,7 @@ export default function ContractDocumentView({
                                 {contract.contractor_sign_timestamp
                                     ? ` · ${new Date(
                                           contract.contractor_sign_timestamp,
-                                      ).toLocaleString("es-PE")}`
+                                      ).toLocaleString("es-PE", { timeZone: "America/Lima" })}`
                                     : ""}
                             </p>
                         ) : (

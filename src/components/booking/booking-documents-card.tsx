@@ -154,7 +154,7 @@ export default function BookingDocumentsCard({
                                                         {formatCurrency(Number(payment.amount))} ·{" "}
                                                         {new Date(
                                                             payment.created_at,
-                                                        ).toLocaleString("es-PE")}
+                                                        ).toLocaleString("es-PE", { timeZone: "America/Lima" })}
                                                     </p>
                                                 </div>
                                                 <Chip

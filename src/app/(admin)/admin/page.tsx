@@ -137,7 +137,7 @@ export default function AdminDashboardPage() {
                                         ) : null}
                                     </div>
                                     <span className="text-xs text-default-400 shrink-0 ml-3">
-                                        {new Date(item.created_at).toLocaleString("es-PE")}
+                                        {new Date(item.created_at).toLocaleString("es-PE", { timeZone: "America/Lima" })}
                                     </span>
                                 </Link>
                             ))}

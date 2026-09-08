@@ -293,7 +293,7 @@ export default function AdminEmailsPage() {
         <div className="flex flex-col gap-6">
             <AdminPageHeader
                 title="Correos transaccionales"
-                description="Administra plantillas de Resend, variables y revisa el historial de envíos."
+                description="Administra plantillas de Brevo, variables y revisa el historial de envíos."
             />
 
             <Tabs aria-label="Correos admin" color="primary" variant="underlined">
@@ -482,6 +482,7 @@ export default function AdminEmailsPage() {
                                                     <span className="text-xs text-default-400">
                                                         {new Date(log.created_at).toLocaleString(
                                                             "es-PE",
+                                                            { timeZone: "America/Lima" },
                                                         )}
                                                     </span>
                                                 </div>

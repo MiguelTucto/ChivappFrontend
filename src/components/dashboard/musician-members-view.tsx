@@ -60,6 +60,7 @@ function formatShortDate(value: string | null | undefined) {
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return null;
     return date.toLocaleDateString("es-PE", {
+        timeZone: "America/Lima",
         day: "2-digit",
         month: "short",
         year: "numeric",

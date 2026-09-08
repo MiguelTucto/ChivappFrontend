@@ -24,6 +24,7 @@ const REVIEW_EMOJIS = ["🤩", "🔥", "💃", "👏", "❤️", "🎵", "🥳",
 
 function formatReviewTime(value: string): string {
     return new Date(value).toLocaleString("es-PE", {
+        timeZone: "America/Lima",
         day: "2-digit",
         month: "short",
         hour: "2-digit",

@@ -150,7 +150,7 @@ export function buildPreviewContext(input: {
         artistPhone: input.artistPhone || "+51 999 888 777",
         pricePerHour: formatPrice(input.pricePerHour, "S/ 350"),
         pricePerEvent: formatPrice(input.pricePerEvent, "S/ 1,200"),
-        contractDate: new Date().toLocaleDateString("es-PE"),
+        contractDate: new Date().toLocaleDateString("es-PE", { timeZone: "America/Lima" }),
     };
 }
 
@@ -849,7 +849,7 @@ export function buildContractorPreviewContext(input: {
         documentNumber: input.documentNumber || "12345678",
         address: input.address || "Av. Principal 123",
         city: input.city || "Lima",
-        contractDate: new Date().toLocaleDateString("es-PE"),
+        contractDate: new Date().toLocaleDateString("es-PE", { timeZone: "America/Lima" }),
     };
 }
 

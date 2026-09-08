@@ -431,7 +431,7 @@ export default function AdminBookingDetailPage({ params }: Props) {
                                 >
                                     <p className="text-xs text-default-500 mb-1">
                                         {message.sender_name ?? "Usuario"} ·{" "}
-                                        {new Date(message.created_at).toLocaleString("es-PE")}
+                                        {new Date(message.created_at).toLocaleString("es-PE", { timeZone: "America/Lima" })}
                                     </p>
                                     <p>{message.body}</p>
                                 </div>

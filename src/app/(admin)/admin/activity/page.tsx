@@ -79,7 +79,7 @@ export default function AdminActivityPage() {
                                     </div>
                                 </div>
                                 <span className="text-xs text-default-400 shrink-0">
-                                    {new Date(item.created_at).toLocaleString("es-PE")}
+                                    {new Date(item.created_at).toLocaleString("es-PE", { timeZone: "America/Lima" })}
                                 </span>
                             </Link>
                         ))

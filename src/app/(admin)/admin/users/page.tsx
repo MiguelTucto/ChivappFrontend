@@ -183,7 +183,7 @@ export default function AdminUsersPage() {
                                     />
                                 </TableCell>
                                 <TableCell className="text-xs text-default-500">
-                                    {new Date(user.created_at).toLocaleDateString("es-PE")}
+                                    {new Date(user.created_at).toLocaleDateString("es-PE", { timeZone: "America/Lima" })}
                                 </TableCell>
                             </TableRow>
                         )}
