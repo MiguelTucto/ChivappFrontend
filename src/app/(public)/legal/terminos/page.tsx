@@ -47,7 +47,7 @@ export default function TermsPage() {
                 </p>
             </Section>
 
-            <Section title="2. Qué es ChivApp">
+            <Section title="2. Qué es Chivapp">
                 <p>
                     {SITE_NAME} es un mercado en línea que conecta a{" "}
                     <strong className="text-foreground">contratistas</strong>{" "}

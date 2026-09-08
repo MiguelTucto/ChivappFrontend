@@ -1,6 +1,6 @@
-# Frontend — ChivApp Web App
+# Frontend — Chivapp Web App
 
-Aplicación web **Next.js 16** (App Router) para descubrir y contratar músicos. Marca: **ChivApp**. UI en español; código en inglés.
+Aplicación web **Next.js 16** (App Router) para descubrir y contratar músicos. Marca: **Chivapp**. UI en español; código en inglés.
 
 ## Stack
 

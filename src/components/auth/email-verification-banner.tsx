@@ -48,7 +48,7 @@ export default function EmailVerificationBanner({ className = "" }: { className?
                     />
                     <p className="leading-snug">
                         Confirma tu correo <strong>{user.email}</strong> para usar todas las
-                        funciones de ChivApp.
+                        funciones de Chivapp.
                     </p>
                 </div>
                 <Button

@@ -48,7 +48,7 @@ export default function ForgotPasswordPage() {
                     {sent ? (
                         <div className="flex flex-col gap-4">
                             <p className="text-sm text-default-600">
-                                Si el correo existe en ChivApp, recibirás instrucciones en unos
+                                Si el correo existe en Chivapp, recibirás instrucciones en unos
                                 minutos. Revisa también spam.
                             </p>
                             <Button as={Link} href="/?auth=login" color="primary" radius="lg">

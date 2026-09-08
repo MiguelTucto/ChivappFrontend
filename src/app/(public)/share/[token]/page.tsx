@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         const title = `${share.event_type}${where}`;
         const description =
             share.message?.trim() ||
-            `Revive el evento${who} y deja tu reacción en ChivApp.`;
+            `Revive el evento${who} y deja tu reacción en Chivapp.`;
 
         return buildPageMetadata({
             title,
@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     } catch {
         return buildPageMetadata({
             title: "Evento compartido",
-            description: "Mira este evento y deja tu reacción en ChivApp.",
+            description: "Mira este evento y deja tu reacción en Chivapp.",
             path: `/share/${token}`,
             noIndex: true,
         });

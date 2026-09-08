@@ -1,4 +1,4 @@
-# ChivApp — Design System
+# Chivapp — Design System
 
 Referencia de diseño para mantener consistencia visual en todas las vistas.
 
@@ -6,7 +6,7 @@ Referencia de diseño para mantener consistencia visual en todas las vistas.
 
 | Campo | Valor |
 |-------|-------|
-| Nombre | **ChivApp** |
+| Nombre | **Chivapp** |
 | Copy de UI | Español |
 | Código (variables, funciones, archivos) | Inglés |
 

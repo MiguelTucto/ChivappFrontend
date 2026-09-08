@@ -59,8 +59,8 @@ export default function AuthModal({
                             </span>
                             <span className="text-sm font-normal text-default-500">
                                 {isLogin
-                                    ? "Accede a tu cuenta de ChivApp"
-                                    : "Únete a ChivApp para contratar o ofrecer tus servicios"}
+                                    ? "Accede a tu cuenta de Chivapp"
+                                    : "Únete a Chivapp para contratar o ofrecer tus servicios"}
                             </span>
                         </ModalHeader>
                         <ModalBody className="pb-6">

@@ -91,7 +91,7 @@ export default function MemberInviteRespondPage({ params }: Props) {
 
     return (
         <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4 py-10">
-            <Link href="/" aria-label="ChivApp" className="mb-6">
+            <Link href="/" aria-label="Chivapp" className="mb-6">
                 <AppLogo height={34} />
             </Link>
 

@@ -329,7 +329,7 @@ export default function RegisterForm({
                     >
                         Política de Privacidad
                     </Link>{" "}
-                    de ChivApp.
+                    de Chivapp.
                 </Checkbox>
 
                 <Button

@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             title: contractor.fullname,
             description:
                 contractor.bio ??
-                `Perfil de ${contractor.fullname} en ChivApp.`,
+                `Perfil de ${contractor.fullname} en Chivapp.`,
             path: `/contractors/${id}`,
         });
     } catch {

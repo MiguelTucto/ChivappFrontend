@@ -61,7 +61,7 @@ export default function CompleteRolePage() {
             await refresh();
             addToast({
                 title: "Cuenta lista",
-                description: "Completa tu perfil para empezar a usar ChivApp.",
+                description: "Completa tu perfil para empezar a usar Chivapp.",
                 color: "success",
             });
             router.replace(getPostLoginPath(user.role, user.is_verified));
@@ -106,7 +106,7 @@ export default function CompleteRolePage() {
                         classNames={UI.authInput}
                     />
                     <RadioGroup
-                        label="¿Cómo usarás ChivApp?"
+                        label="¿Cómo usarás Chivapp?"
                         value={role}
                         onValueChange={(value) =>
                             setRole(value as "musician" | "contractor")

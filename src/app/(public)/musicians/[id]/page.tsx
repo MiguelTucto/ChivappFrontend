@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         const description =
             musician.bio ??
             musician.portfolioDescription ??
-            `Contrata a ${musician.name}${musician.genre ? ` (${musician.genre})` : ""} para tu evento en ChivApp.`;
+            `Contrata a ${musician.name}${musician.genre ? ` (${musician.genre})` : ""} para tu evento en Chivapp.`;
 
         return buildPageMetadata({
             title: musician.name,
@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     } catch {
         return buildPageMetadata({
             title: "Músico no encontrado",
-            description: "Este perfil de músico no está disponible en ChivApp.",
+            description: "Este perfil de músico no está disponible en Chivapp.",
             path: `/musicians/${id}`,
             noIndex: true,
         });
@@ -60,7 +60,7 @@ export default async function MusicianDetailPage({ params }: PageProps) {
     const description =
         musician.bio ??
         musician.portfolioDescription ??
-        `Contrata a ${musician.name} para tu evento en ChivApp.`;
+        `Contrata a ${musician.name} para tu evento en Chivapp.`;
     const jsonLd = musicianJsonLd({
         name: musician.name,
         description,

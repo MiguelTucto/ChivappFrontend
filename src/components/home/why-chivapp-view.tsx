@@ -39,7 +39,7 @@ const features = [
     },
 ];
 
-export default function WhyChivAppSection() {
+export default function WhyChivappSection() {
     return (
         <section
             id="why-chivapp"
@@ -47,7 +47,7 @@ export default function WhyChivAppSection() {
         >
             <div className="max-w-content mx-auto px-4 sm:px-6 md:px-8 text-center">
                 <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/15 text-primary text-[11px] sm:text-xs font-semibold uppercase tracking-wide mb-4 sm:mb-5">
-                    Por qué ChivApp
+                    Por qué Chivapp
                 </span>
 
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-3 sm:mb-4 tracking-tight text-balance px-1">

@@ -5,7 +5,7 @@ import HomeIntroSection from "@/components/home/home-intro-section";
 import HeroView from "@/components/home/hero-view";
 import StatsSection from "@/components/home/stats-view";
 import ProcessSection from "@/components/home/process-view";
-import WhyChivAppSection from "@/components/home/why-chivapp-view";
+import WhyChivappSection from "@/components/home/why-chivapp-view";
 import MusicianCtaSection from "@/components/home/musician-cta-view";
 import FaqSection from "@/components/home/faq-view";
 import ProfileCompletionBanner from "@/components/profile/profile-completion-banner";
@@ -57,7 +57,7 @@ export default function HomeView({ musicians, hasMoreMusicians = false, stats }:
 
             <StatsSection stats={stats} />
             <ProcessSection />
-            <WhyChivAppSection />
+            <WhyChivappSection />
             <MusicianCtaSection />
             <FaqSection />
         </main>

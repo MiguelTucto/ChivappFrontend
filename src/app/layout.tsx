@@ -41,7 +41,7 @@ export const metadata: Metadata = {
         "mariachi",
         "banda para fiesta",
         "músico para boda",
-        "ChivApp",
+        "Chivapp",
     ],
     authors: [{ name: SITE_NAME }],
     creator: SITE_NAME,

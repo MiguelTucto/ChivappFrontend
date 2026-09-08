@@ -1,5 +1,5 @@
 # ==========================================
-# Dockerfile Multi-Stage - ChivApp Frontend
+# Dockerfile Multi-Stage - Chivapp Frontend
 # Next.js 16 Standalone en Alpine
 # ==========================================
 

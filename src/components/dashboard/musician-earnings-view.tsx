@@ -257,7 +257,7 @@ export default function MusicianEarningsView() {
                                 ? "Consulta la deuda de la plataforma, el historial de cada pago y lo que te asignaron como integrante."
                                 : showMember
                                   ? "Aquí ves lo que el líder te asignó por cada evento y el estado de cada pago."
-                                  : "El dinero de los shows lo retiene ChivApp. Revisa deudas por show y el historial de cada pago."}
+                                  : "El dinero de los shows lo retiene Chivapp. Revisa deudas por show y el historial de cada pago."}
                         </p>
                     </div>
                     <Button

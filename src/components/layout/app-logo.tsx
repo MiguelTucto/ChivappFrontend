@@ -13,7 +13,7 @@ export default function AppLogo({ height = 28, className, priority }: Props) {
     return (
         <Image
             src="/logo-chivapp.png"
-            alt="ChivApp"
+            alt="Chivapp"
             width={Math.round(height * LOGO_ASPECT_RATIO)}
             height={height}
             priority={priority}

@@ -281,7 +281,7 @@ export default function AppNavbar({ revealOnScroll = false }: Props) {
             >
                 <Link
                     href={homePath}
-                    aria-label="ChivApp"
+                    aria-label="Chivapp"
                     className="shrink-0 hover:opacity-80 transition-opacity"
                 >
                     <AppLogo height={compact ? 22 : 28} priority />

@@ -325,7 +325,7 @@ export default function BookingMercadoPagoModal({
                                     </div>
                                     <div>
                                         <h3 className="text-xl font-bold text-foreground">
-                                            Pago Seguro en ChivApp
+                                            Pago Seguro en Chivapp
                                         </h3>
                                         <p className="text-xs text-default-500">
                                             Checkout API oficial respaldado por Mercado Pago

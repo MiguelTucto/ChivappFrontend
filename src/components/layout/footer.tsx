@@ -56,7 +56,7 @@ export default function Footer() {
                 <div className="border-t border-white/10 mb-5 sm:mb-6" />
 
                 <p className="text-xs sm:text-sm text-white/55 text-center sm:text-left">
-                    © {new Date().getFullYear()} ChivApp. Todos los derechos
+                    © {new Date().getFullYear()} Chivapp. Todos los derechos
                     reservados.
                 </p>
             </div>

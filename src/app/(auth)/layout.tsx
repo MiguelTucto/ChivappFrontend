@@ -23,7 +23,7 @@ export default function AuthLayout({
 
             <Link
                 href="/"
-                aria-label="ChivApp"
+                aria-label="Chivapp"
                 className="mb-8 hover:opacity-80 transition-opacity"
             >
                 <AppLogo height={34} priority />

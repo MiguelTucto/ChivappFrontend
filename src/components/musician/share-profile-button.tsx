@@ -31,8 +31,8 @@ export default function ShareProfileButton({
         if (typeof navigator !== "undefined" && navigator.share) {
             try {
                 await navigator.share({
-                    title: `${name} · ChivApp`,
-                    text: `Mira el perfil de ${name} en ChivApp`,
+                    title: `${name} · Chivapp`,
+                    text: `Mira el perfil de ${name} en Chivapp`,
                     url,
                 });
                 return;

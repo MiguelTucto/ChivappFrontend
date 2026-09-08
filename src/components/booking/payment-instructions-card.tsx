@@ -79,7 +79,7 @@ export default function PaymentInstructionsCard({ className = "" }: Props) {
                 />
                 <div>
                     <p className="font-semibold text-foreground">
-                        Paga a la cuenta de ChivApp
+                        Paga a la cuenta de Chivapp
                     </p>
                     <p className="text-sm text-default-600 mt-0.5">
                         {data.instructions ||
@@ -93,7 +93,7 @@ export default function PaymentInstructionsCard({ className = "" }: Props) {
                     <div className="rounded-xl border border-default-200 bg-content1 p-2 shrink-0">
                         <Image
                             src={qrSrc}
-                            alt="QR de pago ChivApp"
+                            alt="QR de pago Chivapp"
                             className="object-contain"
                             classNames={{ wrapper: "w-36 h-36", img: "w-36 h-36" }}
                         />

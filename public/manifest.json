@@ -1,6 +1,6 @@
 {
-  "name": "ChivApp",
-  "short_name": "ChivApp",
+  "name": "Chivapp",
+  "short_name": "Chivapp",
   "description": "Encuentra y contrata músicos para tu evento",
   "start_url": "/",
   "display": "standalone",

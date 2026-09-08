@@ -1,7 +1,7 @@
 import type { MapLocation } from "@/lib/geocoding";
 
 const NOMINATIM_BASE = "https://nominatim.openstreetmap.org";
-const USER_AGENT = "ChivApp/1.0 (booking-location-picker)";
+const USER_AGENT = "Chivapp/1.0 (booking-location-picker)";
 
 type NominatimResult = {
     lat: string;
