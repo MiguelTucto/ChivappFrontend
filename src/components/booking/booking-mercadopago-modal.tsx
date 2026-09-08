@@ -320,26 +320,30 @@ export default function BookingMercadoPagoModal({
             size="2xl"
             scrollBehavior="inside"
             backdrop="blur"
+            classNames={{
+                base: "mx-2 sm:mx-auto max-w-[calc(100vw-1rem)] sm:max-w-2xl max-h-[92vh]",
+                wrapper: "items-end sm:items-center",
+            }}
         >
             <ModalContent>
                 {() => (
                     <>
-                        <ModalHeader className="flex flex-col gap-1 pb-2">
-                            <div className="flex items-center justify-between gap-2">
-                                <div className="flex items-center gap-2">
-                                    <div className="p-2 rounded-xl bg-primary/10 text-primary">
-                                        <Icon icon="solar:shield-check-bold" className="w-6 h-6 text-emerald-500" />
+                        <ModalHeader className="flex flex-col gap-1 pb-2 pr-10 sm:pr-12">
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                                <div className="flex items-center gap-2 min-w-0">
+                                    <div className="p-2 rounded-xl bg-primary/10 text-primary shrink-0">
+                                        <Icon icon="solar:shield-check-bold" className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-500" />
                                     </div>
-                                    <div>
-                                        <h3 className="text-xl font-bold text-foreground">
+                                    <div className="min-w-0">
+                                        <h3 className="text-base sm:text-xl font-bold text-foreground truncate">
                                             Pago Seguro en Chivapp
                                         </h3>
-                                        <p className="text-xs text-default-500">
-                                            Checkout API oficial respaldado por Mercado Pago
+                                        <p className="text-xs text-default-500 line-clamp-1">
+                                            Checkout respaldado por Mercado Pago
                                         </p>
                                     </div>
                                 </div>
-                                <Chip color="success" variant="flat" size="sm" startContent={<Icon icon="solar:lock-bold" />}>
+                                <Chip color="success" variant="flat" size="sm" startContent={<Icon icon="solar:lock-bold" />} className="hidden xs:inline-flex">
                                     100% Protegido
                                 </Chip>
                             </div>
@@ -347,7 +351,7 @@ export default function BookingMercadoPagoModal({
 
                         <ModalBody className="gap-5 py-3">
                             {/* Resumen del Monto */}
-                            <div className="flex flex-col sm:flex-row items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border border-primary/20 gap-3">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border border-primary/20 gap-3">
                                 <div>
                                     <span className="text-xs uppercase tracking-wider font-semibold text-primary">
                                         Concepto a Pagar
@@ -356,7 +360,7 @@ export default function BookingMercadoPagoModal({
                                         {booking.event_type} · {paymentLabel}
                                     </p>
                                 </div>
-                                <div className="text-right">
+                                <div className="text-left sm:text-right">
                                     <span className="text-xs text-default-500">Total a debitar</span>
                                     <p className="text-2xl font-black text-foreground text-primary">
                                         {formatCurrency(amount)}
@@ -392,15 +396,19 @@ export default function BookingMercadoPagoModal({
                                 color="primary"
                                 variant="bordered"
                                 className="w-full"
+                                classNames={{
+                                    tabList: "grid grid-cols-2 w-full p-1",
+                                    tab: "h-auto py-2 text-xs sm:text-sm",
+                                }}
                             >
                                 {/* TAB 1: YAPE NATIVO */}
                                 <Tab
                                     key="yape"
                                     title={
-                                        <div className="flex items-center gap-2">
-                                            <Icon icon="solar:smartphone-bold" className="w-4 h-4 text-purple-600" />
+                                        <div className="flex items-center gap-1.5 sm:gap-2">
+                                            <Icon icon="solar:smartphone-bold" className="w-4 h-4 text-purple-600 shrink-0" />
                                             <span className="font-semibold text-purple-700 dark:text-purple-300">Yape</span>
-                                            <Chip size="sm" color="secondary" variant="flat" className="h-5 text-[10px]">
+                                            <Chip size="sm" color="secondary" variant="flat" className="h-5 text-[9px] sm:text-[10px] hidden sm:inline-flex">
                                                 Recomendado
                                             </Chip>
                                         </div>
@@ -465,9 +473,12 @@ export default function BookingMercadoPagoModal({
                                 <Tab
                                     key="card"
                                     title={
-                                        <div className="flex items-center gap-2">
-                                            <Icon icon="solar:card-2-bold" className="w-4 h-4 text-primary" />
-                                            <span className="font-semibold">Tarjeta Débito / Crédito</span>
+                                        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                                            <Icon icon="solar:card-2-bold" className="w-4 h-4 text-primary shrink-0" />
+                                            <span className="font-semibold truncate">
+                                                <span className="hidden sm:inline">Tarjeta Débito / Crédito</span>
+                                                <span className="sm:hidden">Tarjeta</span>
+                                            </span>
                                         </div>
                                     }
                                 >
@@ -514,16 +525,16 @@ export default function BookingMercadoPagoModal({
                             </Tabs>
                         </ModalBody>
 
-                        <ModalFooter className="flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-default-100 pt-3">
+                        <ModalFooter className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-2 border-t border-default-100 pt-3">
                             <Button
                                 variant="light"
                                 size="sm"
-                                className="text-xs text-default-500 hover:text-primary"
+                                className="text-xs text-default-500 hover:text-primary h-auto py-2 whitespace-normal text-center sm:text-left"
                                 onPress={handleCheckoutProRedirect}
                                 isDisabled={isProcessing}
                             >
-                                <Icon icon="solar:link-round-angle-bold" className="w-3.5 h-3.5 mr-1" />
-                                ¿Prefieres pagar en la web externa de Mercado Pago?
+                                <Icon icon="solar:link-round-angle-bold" className="w-3.5 h-3.5 mr-1 shrink-0 inline" />
+                                <span>¿Prefieres pagar en la web externa de Mercado Pago?</span>
                             </Button>
 
                             <Button
@@ -532,6 +543,7 @@ export default function BookingMercadoPagoModal({
                                 size="sm"
                                 onPress={onClose}
                                 isDisabled={isProcessing}
+                                className="w-full sm:w-auto"
                             >
                                 Cancelar
                             </Button>

@@ -322,13 +322,13 @@ export default function BookingContractConfirmCard({
                     </div>
 
                     {/* Mercado Pago Security Banner */}
-                    <div className="rounded-2xl border border-sky-500/20 bg-sky-500/5 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center text-sky-600 dark:text-sky-400">
+                    <div className="rounded-2xl border border-sky-500/20 bg-sky-500/5 p-3.5 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                        <div className="flex items-start sm:items-center gap-3 min-w-0">
+                            <div className="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center text-sky-600 dark:text-sky-400 shrink-0">
                                 <Icon icon="material-symbols:shield-lock" width={24} />
                             </div>
-                            <div>
-                                <div className="text-sm font-semibold text-foreground flex items-center gap-1.5">
+                            <div className="min-w-0">
+                                <div className="text-sm font-semibold text-foreground flex flex-wrap items-center gap-1.5">
                                     <span>Pago 100% protegido con Mercado Pago</span>
                                     <Chip size="sm" variant="flat" color="primary" className="text-[11px] h-5">
                                         Oficial
@@ -339,7 +339,7 @@ export default function BookingContractConfirmCard({
                                 </p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-2 text-default-400 text-xs">
+                        <div className="flex items-center gap-2 text-default-400 text-xs self-end sm:self-auto shrink-0">
                             <Icon icon="logos:visa" width={28} />
                             <Icon icon="logos:mastercard" width={24} />
                             <span className="font-bold text-primary px-1">yape</span>
@@ -352,9 +352,9 @@ export default function BookingContractConfirmCard({
                         radius="lg"
                         size="lg"
                         isLoading={isConfirming}
-                        className="font-bold text-base shadow-lg shadow-primary/20 py-6"
+                        className="font-bold text-sm sm:text-base shadow-lg shadow-primary/20 py-5 sm:py-6 h-auto whitespace-normal leading-snug text-center px-4"
                         startContent={
-                            !isConfirming && <Icon icon="material-symbols:lock" width={22} />
+                            !isConfirming && <Icon icon="material-symbols:lock" width={22} className="shrink-0" />
                         }
                     >
                         {isConfirming

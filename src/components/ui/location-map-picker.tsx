@@ -150,7 +150,7 @@ export default function LocationMapPicker({ value, onChange }: Props) {
                     size="sm"
                     variant="flat"
                     color="secondary"
-                    className="self-start text-xs font-medium"
+                    className="self-start text-xs font-medium max-w-full text-left whitespace-normal h-auto py-1.5"
                     onPress={() => {
                         const manualLocation: MapLocation = {
                             lat: center[0],

@@ -170,9 +170,11 @@ function PhaseRail({
     const trackTop = compact ? "top-4" : "top-[1.125rem] sm:top-5";
 
     return (
-        <nav aria-label="Fases de la reserva" className="w-full">
+        <nav aria-label="Fases de la reserva" className="w-full overflow-x-auto pb-1.5 scrollbar-none">
             <ol
-                className="relative grid w-full gap-x-0.5 sm:gap-x-1.5"
+                className={`relative grid gap-x-1 sm:gap-x-1.5 ${
+                    compact ? "min-w-[480px] sm:min-w-0" : "min-w-[560px] sm:min-w-0"
+                } w-full`}
                 style={{
                     gridTemplateColumns: `repeat(${Math.max(steps.length, 1)}, minmax(0, 1fr))`,
                 }}
@@ -196,7 +198,7 @@ function PhaseRail({
                 {steps.map((step, index) => (
                     <li
                         key={step.id}
-                        className="relative z-10 flex flex-col items-center text-center min-w-0 px-0.5"
+                        className="relative z-10 flex flex-col items-center text-center min-w-0 px-1"
                     >
                         <div
                             className={`flex items-center justify-center ${

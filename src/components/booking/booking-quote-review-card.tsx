@@ -85,7 +85,7 @@ export default function BookingQuoteReviewCard({
                         </p>
                     </div>
                     {contractorTotal != null ? (
-                        <div className="rounded-3xl border border-primary/20 bg-content1/80 px-5 py-4 text-right shadow-soft">
+                        <div className="w-full sm:w-auto rounded-3xl border border-primary/20 bg-content1/80 px-5 py-4 text-left sm:text-right shadow-soft">
                             <p className="text-xs text-default-500">Total a pagar</p>
                             <p className="text-3xl font-bold text-primary">
                                 {formatCurrency(contractorTotal)}
@@ -250,7 +250,7 @@ export default function BookingQuoteReviewCard({
                         size="lg"
                         isLoading={isRejecting}
                         onPress={onReject}
-                        className="font-semibold sm:min-w-44"
+                        className="font-semibold w-full sm:w-auto sm:min-w-44"
                     >
                         Rechazar cotización
                     </Button>
@@ -260,7 +260,7 @@ export default function BookingQuoteReviewCard({
                         size="lg"
                         isLoading={isAccepting}
                         onPress={onAccept}
-                        className="font-semibold sm:min-w-52"
+                        className="font-semibold w-full sm:w-auto sm:min-w-52"
                         startContent={
                             <Icon icon="material-symbols:thumb-up" width={20} />
                         }

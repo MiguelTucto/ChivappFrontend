@@ -29,7 +29,7 @@ export default function SignaturePad({
         const resize = () => {
             const parent = canvas.parentElement;
             if (!parent) return;
-            const width = parent.clientWidth;
+            const width = Math.max(parent.clientWidth || 280, 240);
             const height = 180;
             const ratio = window.devicePixelRatio || 1;
             const previous = canvas.toDataURL("image/png");
