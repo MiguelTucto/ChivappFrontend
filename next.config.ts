@@ -3,7 +3,6 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 const projectRoot = path.dirname(fileURLToPath(import.meta.url));
-const apiProxyTarget = process.env.API_PROXY_TARGET || "http://localhost:8000";
 
 const nextConfig: NextConfig = {
   output: "standalone",
@@ -18,14 +17,6 @@ const nextConfig: NextConfig = {
         source: "/auth/complete-role",
         destination: "/complete-role",
         permanent: false,
-      },
-    ];
-  },
-  async rewrites() {
-    return [
-      {
-        source: "/uploads/:path*",
-        destination: `${apiProxyTarget}/uploads/:path*`,
       },
     ];
   },

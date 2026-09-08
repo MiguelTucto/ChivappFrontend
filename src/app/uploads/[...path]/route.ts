@@ -7,8 +7,19 @@ function getUpstreamBase(request: NextRequest): string {
     if (process.env.BACKEND_URL) {
         return process.env.BACKEND_URL.replace(/\/$/, "");
     }
-    const host = request.headers.get("host") || "";
-    if (host.includes("chiv.app")) {
+    if (process.env.NEXT_PUBLIC_API_URL) {
+        return process.env.NEXT_PUBLIC_API_URL.replace(/\/api\/v1\/?$/, "").replace(/\/$/, "");
+    }
+    const host = (
+        request.headers.get("x-forwarded-host") ||
+        request.headers.get("host") ||
+        ""
+    ).toLowerCase();
+    if (
+        host.includes("chiv.app") ||
+        host.includes("run.app") ||
+        process.env.NODE_ENV === "production"
+    ) {
         return "https://api.chiv.app";
     }
     return "http://localhost:8000";
