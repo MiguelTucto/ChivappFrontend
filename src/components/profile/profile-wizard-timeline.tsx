@@ -166,101 +166,47 @@ function PhaseRail({
     onStepSelect?: (index: number) => void;
     compact?: boolean;
 }) {
-    const progressRatio = phaseProgressRatio(steps);
-    const markerSize = compact ? "sm" : "md";
-    const trackTop = compact ? "top-4" : "top-[1.125rem] sm:top-5";
-
     return (
-        <nav aria-label="Pasos del perfil" className="w-full">
-            <ol
-                className="relative flex sm:grid w-full gap-x-3 sm:gap-x-1.5 overflow-x-auto sm:overflow-visible pb-1 sm:pb-0 scrollbar-none"
-                style={{
-                    gridTemplateColumns: `repeat(${Math.max(steps.length, 1)}, minmax(0, 1fr))`,
-                }}
-            >
-                <li
-                    aria-hidden
-                    className={`pointer-events-none absolute ${trackTop} -translate-y-1/2 h-0.5`}
-                    style={{
-                        gridColumn: "1 / -1",
-                        left: `calc(100% / ${Math.max(steps.length, 1)} / 2)`,
-                        right: `calc(100% / ${Math.max(steps.length, 1)} / 2)`,
-                    }}
-                >
-                    <span className="absolute inset-0 rounded-full bg-default-200/90" />
-                    <span
-                        className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-primary via-primary to-primary/70 transition-[width] duration-500"
-                        style={{ width: `${progressRatio * 100}%` }}
-                    />
-                </li>
-
+        <nav aria-label="Pasos del perfil" className="w-full overflow-x-auto pb-2 scrollbar-none">
+            <ol className="flex items-center gap-2.5 w-max min-w-full px-1">
                 {steps.map((step, index) => {
-                    const content = (
-                        <>
-                            <div
-                                className={`flex items-center justify-center ${
-                                    compact ? "h-8" : "h-9 sm:h-10"
-                                }`}
-                            >
-                                <PhaseMarker step={step} size={markerSize} />
-                            </div>
-                            <span
-                                className={`mt-2 w-full font-semibold leading-tight line-clamp-2 ${
-                                    compact
-                                        ? "text-[9px] sm:text-[10px] md:text-xs"
-                                        : "text-[10px] sm:text-xs"
-                                } ${
-                                    step.state === "current"
-                                        ? "text-primary"
-                                        : step.state === "done"
-                                          ? "text-success"
-                                          : "text-default-600"
-                                }`}
-                                title={step.title}
-                            >
-                                {compact ? (
-                                    step.shortTitle
-                                ) : (
-                                    <>
-                                        <span className="hidden sm:inline">{step.title}</span>
-                                        <span className="sm:hidden">{step.shortTitle}</span>
-                                    </>
-                                )}
-                            </span>
-                            {!compact && !step.required ? (
-                                <span className="mt-1 text-[9px] sm:text-[10px] font-medium text-default-400">
-                                    Opcional
-                                </span>
-                            ) : !compact ? (
-                                <span className="mt-1 text-[9px] sm:text-[10px] tabular-nums text-default-400">
-                                    {index + 1}/{steps.length}
-                                </span>
-                            ) : null}
-                        </>
-                    );
+                    const isCurrent = step.state === "current";
+                    const isDone = step.state === "done";
+                    const isUpcoming = step.state === "upcoming";
+                    const phaseIcon = isDone ? "material-symbols:check-circle-rounded" : step.icon || "material-symbols:circle";
+
+                    const Tag = onStepSelect ? "button" : "div";
+                    const props = onStepSelect ? { onClick: () => onStepSelect(index), type: "button" as const } : {};
 
                     return (
-                        <li
-                            key={step.id}
-                            className="relative z-10 flex flex-col items-center text-center shrink-0 w-16 sm:w-auto sm:shrink sm:min-w-0 px-0.5"
-                        >
-                            {onStepSelect ? (
-                                <button
-                                    type="button"
-                                    onClick={() => onStepSelect(index)}
-                                    className="flex flex-col items-center w-full min-w-0 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 cursor-pointer"
-                                    aria-current={
-                                        step.state === "current" ? "step" : undefined
-                                    }
-                                    aria-label={`${index + 1}. ${step.title}${
-                                        step.required ? "" : " (opcional)"
-                                    }`}
-                                >
-                                    {content}
-                                </button>
-                            ) : (
-                                content
-                            )}
+                        <li key={step.id} className="shrink-0">
+                            <Tag
+                                // @ts-ignore dynamic tag
+                                {...props}
+                                className={`group relative flex items-center h-10 sm:h-11 rounded-full border backdrop-blur-md shadow-soft transition-all duration-300 ease-out px-4 gap-2.5 outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                                    onStepSelect ? "cursor-pointer" : ""
+                                } ${
+                                    isCurrent
+                                        ? "border-primary/50 bg-primary/10 text-primary hover:bg-primary/15"
+                                        : isDone
+                                          ? "border-success/40 bg-success/10 text-success hover:bg-success/15"
+                                          : "border-default-200/60 bg-content1/85 text-default-500 hover:border-primary/40 hover:text-foreground"
+                                }`}
+                                aria-current={isCurrent ? "step" : undefined}
+                                aria-label={`${index + 1}. ${step.title}${step.required ? "" : " (opcional)"}`}
+                            >
+                                <span className={`flex items-center justify-center shrink-0 ${isDone ? "text-success" : isCurrent ? "text-primary" : "text-default-400 group-hover:text-primary"}`}>
+                                    <Icon icon={phaseIcon} width={18} height={18} />
+                                </span>
+                                <span className={`text-sm font-semibold whitespace-nowrap ${isCurrent ? "text-primary" : isDone ? "text-success" : "text-default-600 group-hover:text-foreground"}`}>
+                                    {compact ? step.shortTitle : step.title}
+                                </span>
+                                {!step.required && !compact ? (
+                                    <span className="text-[10px] font-medium opacity-60 ml-1">
+                                        (Opcional)
+                                    </span>
+                                ) : null}
+                            </Tag>
                         </li>
                     );
                 })}

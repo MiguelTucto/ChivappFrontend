@@ -27,13 +27,12 @@ import {
     getBookingStatusTone,
     type BookingStatusTone,
 } from "@/lib/booking-labels";
-import { getBookingBalanceDue } from "@/lib/bookings";
 import {
     buildGoogleMapsUrl,
     parseLocationReference,
 } from "@/lib/geocoding";
 import { resolveUploadUrl } from "@/lib/uploads";
-import type { BookingBalanceDue, BookingOut, UserRole } from "@/types/api";
+import type { BookingOut, UserRole } from "@/types/api";
 import {
     contractorPayableTotal,
     platformFeeAmount,
@@ -213,57 +212,15 @@ function PartyValue({ party }: { party: Party }) {
 
 function PriceDetailButton({ booking }: { booking: BookingOut }) {
     const [isOpen, setIsOpen] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [balance, setBalance] = useState<BookingBalanceDue | null>(null);
-
-    useEffect(() => {
-        if (!isOpen) return;
-
-        let cancelled = false;
-        void Promise.resolve().then(() => {
-            if (!cancelled) setIsLoading(true);
-        });
-        getBookingBalanceDue(booking.id)
-            .then((data) => {
-                if (!cancelled) setBalance(data);
-            })
-            .catch(() => {
-                if (!cancelled) setBalance(null);
-            })
-            .finally(() => {
-                if (!cancelled) setIsLoading(false);
-            });
-
-        return () => {
-            cancelled = true;
-        };
-    }, [isOpen, booking.id]);
 
     const total =
         booking.price_agreed != null ? Number(booking.price_agreed) : null;
-    const advance =
-        booking.advance_amount != null ? Number(booking.advance_amount) : null;
     const fee = platformFeeAmount(booking);
-    const contractorTotal =
-        balance?.contractor_total != null
-            ? Number(balance.contractor_total)
-            : contractorPayableTotal(booking);
-    const amountPaid =
-        balance?.amount_paid != null ? Number(balance.amount_paid) : null;
-    const balanceDue =
-        balance?.balance_due != null
-            ? Number(balance.balance_due)
-            : contractorTotal != null && amountPaid != null
-              ? Math.max(0, contractorTotal - amountPaid)
-              : contractorTotal != null
-                ? contractorTotal
-                : null;
+    const contractorTotal = contractorPayableTotal(booking);
     const feePercent =
         booking.platform_fee_percent != null
             ? Number(booking.platform_fee_percent)
-            : balance?.platform_fee_percent != null
-              ? Number(balance.platform_fee_percent)
-              : null;
+            : null;
 
     return (
         <Popover
@@ -288,65 +245,35 @@ function PriceDetailButton({ booking }: { booking: BookingOut }) {
                     <p className="text-xs font-semibold uppercase tracking-wide text-default-500">
                         Detalle del precio
                     </p>
-                    {isLoading ? (
-                        <div className="flex justify-center py-3">
-                            <Spinner size="sm" color="primary" />
+                    <dl className="flex flex-col gap-1.5 text-sm">
+                        <div className="flex items-center justify-between gap-3">
+                            <dt className="text-default-500">Precio servicio</dt>
+                            <dd className="font-semibold tabular-nums text-foreground">
+                                {total != null
+                                    ? formatCurrency(total)
+                                    : "Sin cotizar"}
+                            </dd>
                         </div>
-                    ) : (
-                        <dl className="flex flex-col gap-1.5 text-sm">
+                        {fee > 0 ? (
                             <div className="flex items-center justify-between gap-3">
-                                <dt className="text-default-500">Precio servicio</dt>
-                                <dd className="font-semibold tabular-nums text-foreground">
-                                    {total != null
-                                        ? formatCurrency(total)
-                                        : "Sin cotizar"}
-                                </dd>
-                            </div>
-                            {fee > 0 ? (
-                                <div className="flex items-center justify-between gap-3">
-                                    <dt className="text-default-500">
-                                        Comisión
-                                        {feePercent != null ? ` (${feePercent}%)` : ""}
-                                    </dt>
-                                    <dd className="font-medium tabular-nums text-foreground">
-                                        {formatCurrency(fee)}
-                                    </dd>
-                                </div>
-                            ) : null}
-                            {contractorTotal != null && fee > 0 ? (
-                                <div className="flex items-center justify-between gap-3">
-                                    <dt className="text-default-500">Total contratista</dt>
-                                    <dd className="font-semibold tabular-nums text-foreground">
-                                        {formatCurrency(contractorTotal)}
-                                    </dd>
-                                </div>
-                            ) : null}
-                            <div className="flex items-center justify-between gap-3">
-                                <dt className="text-default-500">Anticipo</dt>
+                                <dt className="text-default-500">
+                                    Comisión
+                                    {feePercent != null ? ` (${feePercent}%)` : ""}
+                                </dt>
                                 <dd className="font-medium tabular-nums text-foreground">
-                                    {advance != null
-                                        ? formatCurrency(advance)
-                                        : "—"}
+                                    {formatCurrency(fee)}
                                 </dd>
                             </div>
-                            {amountPaid != null ? (
-                                <div className="flex items-center justify-between gap-3">
-                                    <dt className="text-default-500">Pagado</dt>
-                                    <dd className="font-medium tabular-nums text-foreground">
-                                        {formatCurrency(amountPaid)}
-                                    </dd>
-                                </div>
-                            ) : null}
+                        ) : null}
+                        {contractorTotal != null && fee > 0 ? (
                             <div className="flex items-center justify-between gap-3 border-t border-default-200/70 pt-1.5 mt-0.5">
-                                <dt className="text-default-500">Saldo</dt>
+                                <dt className="text-default-500">Total contratista</dt>
                                 <dd className="font-semibold tabular-nums text-foreground">
-                                    {balanceDue != null
-                                        ? formatCurrency(balanceDue)
-                                        : "—"}
+                                    {formatCurrency(contractorTotal)}
                                 </dd>
                             </div>
-                        </dl>
-                    )}
+                        ) : null}
+                    </dl>
                 </div>
             </PopoverContent>
         </Popover>

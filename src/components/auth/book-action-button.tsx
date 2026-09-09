@@ -69,9 +69,11 @@ export default function BookActionButton({
                 >
                     Inicia sesión para contratar
                 </Button>
-                <p className="text-sm text-default-500 max-w-xs leading-snug">
-                    Debes iniciar sesión y verificar tus datos para poder generar una reserva.
-                </p>
+                {showHelper && (
+                    <p className="text-sm text-default-500 max-w-xs leading-snug">
+                        Debes iniciar sesión y verificar tus datos para poder generar una reserva.
+                    </p>
+                )}
             </div>
         );
     }
@@ -88,9 +90,11 @@ export default function BookActionButton({
                 >
                     {label}
                 </Button>
-                <p className="text-sm text-default-500 max-w-xs leading-snug">
-                    Solo los contratistas pueden enviar solicitudes de reserva.
-                </p>
+                {showHelper && (
+                    <p className="text-sm text-default-500 max-w-xs leading-snug">
+                        Solo los contratistas pueden enviar solicitudes de reserva.
+                    </p>
+                )}
             </div>
         );
     }
@@ -107,9 +111,11 @@ export default function BookActionButton({
                 >
                     {label}
                 </Button>
-                <p className="text-sm text-warning-600 dark:text-warning-500 font-medium max-w-xs leading-snug">
-                    Debes verificar tus datos en "Mi Perfil" para poder reservar.
-                </p>
+                {showHelper && (
+                    <p className="text-sm text-warning-600 dark:text-warning-500 font-medium max-w-xs leading-snug">
+                        Debes verificar tus datos en "Mi Perfil" para poder reservar.
+                    </p>
+                )}
             </div>
         );
     }

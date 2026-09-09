@@ -17,7 +17,6 @@ import BookingLiveLocationCard from "@/components/booking/booking-live-location-
 import BookingMemberPayoutPanel from "@/components/booking/booking-member-payout-panel";
 import BookingFinalReviewModal from "@/components/booking/booking-final-review-modal";
 import BookingPaymentStatusCard from "@/components/booking/booking-payment-status-card";
-import BookingMercadoPagoModal from "@/components/booking/booking-mercadopago-modal";
 import BookingReviewsTimeline from "@/components/booking/booking-reviews-timeline";
 import BookingShareCard from "@/components/booking/booking-share-card";
 import RecommendContractorCard from "@/components/booking/recommend-contractor-card";
@@ -27,14 +26,12 @@ import { createMercadoPagoPreference } from "@/lib/payments";
 import {
     completeBooking,
     getBooking,
-    getBookingBalanceDue,
     listBookingMessages,
     postBookingMessage,
     startBookingEvent,
 } from "@/lib/bookings";
 import { getCompletionGates } from "@/lib/booking-timeline";
 import type {
-    BookingBalanceDue,
     BookingMessageOut,
     BookingOut,
     UserRole,
@@ -65,11 +62,6 @@ export default function BookingConfirmedWorkspace({
     const [messages, setMessages] = useState<BookingMessageOut[]>([]);
     const [messageBody, setMessageBody] = useState("");
     const [isSendingMessage, setIsSendingMessage] = useState(false);
-    const [balance, setBalance] = useState<BookingBalanceDue | null>(null);
-
-    const [balanceAmount, setBalanceAmount] = useState("");
-    const [isSubmittingBalance, setIsSubmittingBalance] = useState(false);
-    const [isBalanceModalOpen, setIsBalanceModalOpen] = useState(false);
 
     const [isCompleting, setIsCompleting] = useState(false);
     const [isStarting, setIsStarting] = useState(false);
@@ -79,18 +71,6 @@ export default function BookingConfirmedWorkspace({
         listBookingMessages(booking.id)
             .then(setMessages)
             .catch(() => setMessages([]));
-        if (isMemberMode) {
-            setBalance(null);
-            return;
-        }
-        getBookingBalanceDue(booking.id)
-            .then((data) => {
-                setBalance(data);
-                if (data.balance_due > 0) {
-                    setBalanceAmount(String(data.balance_due));
-                }
-            })
-            .catch(() => setBalance(null));
     }, [booking.id, booking.status, isMemberMode]);
 
     async function handleSendMessage(event: FormEvent) {
@@ -113,19 +93,6 @@ export default function BookingConfirmedWorkspace({
         } finally {
             setIsSendingMessage(false);
         }
-    }
-
-    function handlePayBalanceWithMercadoPago() {
-        const due = balance?.balance_due ?? Number(balanceAmount);
-        if (!due || due <= 0) {
-            addToast({
-                title: "Sin saldo pendiente",
-                description: "No hay saldo pendiente por pagar para esta reserva.",
-                color: "warning",
-            });
-            return;
-        }
-        setIsBalanceModalOpen(true);
     }
 
     async function handleStartEvent() {
@@ -169,7 +136,6 @@ export default function BookingConfirmedWorkspace({
 
     async function handleComplete() {
         const { canFinalize, missing } = getCompletionGates(booking.status, {
-            balanceDue: balance?.balance_due ?? null,
             hasReview,
             role,
         });
@@ -223,11 +189,6 @@ export default function BookingConfirmedWorkspace({
     const isCompleted = booking.status === "completed";
     const canChat =
         booking.status !== "cancelled" && booking.status !== "completed";
-    const showBalanceForm =
-        !isMemberMode &&
-        role === "contractor" &&
-        (booking.status === "payment_retained" || booking.status === "balance_pending") &&
-        (balance?.balance_due ?? 0) > 0;
     const showReview =
         booking.status === "in_progress" ||
         booking.status === "payment_released" ||
@@ -242,19 +203,13 @@ export default function BookingConfirmedWorkspace({
     const showCompletePanel =
         !isMemberMode && booking.status !== "cancelled" && !isCompleted;
     const completion = getCompletionGates(booking.status, {
-        balanceDue: balance?.balance_due ?? null,
         hasReview,
         role,
     });
 
-    const showBalanceReviewStatus =
-        !isMemberMode && role === "musician" && booking.status === "balance_review";
     const showPaymentActions =
         !isMemberMode &&
-        (showBalanceForm ||
-            (role === "musician" &&
-                booking.status === "payment_retained" &&
-                (balance?.balance_due ?? 0) === 0));
+        (role === "musician" && booking.status === "payment_retained");
     const showMusicianRecommend =
         !isMemberMode &&
         role === "musician" &&
@@ -286,13 +241,8 @@ export default function BookingConfirmedWorkspace({
                 </Card>
             ) : null}
 
-            {booking.status === "in_progress" &&
-            (balance == null || balance.balance_due <= 0) ? (
+            {booking.status === "in_progress" ? (
                 <BookingLiveLocationCard bookingId={booking.id} role={role} />
-            ) : null}
-
-            {showBalanceReviewStatus ? (
-                <BookingPaymentStatusCard booking={booking} kind="balance" />
             ) : null}
 
             {/* Acciones de pago / habilitación del evento */}
@@ -304,51 +254,8 @@ export default function BookingConfirmedWorkspace({
                             <h3 className="text-lg font-bold">Pagos del evento</h3>
                         </div>
 
-                        {showBalanceForm ? (
-                            <div className="flex flex-col gap-4">
-                                <div>
-                                    <h4 className="font-semibold text-foreground">
-                                        Abono final del evento
-                                    </h4>
-                                    <p className="text-sm text-default-500 mt-1">
-                                        Cancela el saldo restante de manera 100% segura con Mercado Pago para habilitar la fase del show, fotos y reseña.
-                                    </p>
-                                </div>
-
-                                <div className="rounded-2xl border border-secondary/30 bg-secondary/5 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                                    <div>
-                                        <p className="text-xs text-default-500 font-medium">Monto del saldo pendiente</p>
-                                        <p className="text-2xl font-bold text-foreground mt-0.5">
-                                            {formatCurrency(balance?.balance_due ?? (Number(balanceAmount) || 0))}
-                                        </p>
-                                        <div className="flex items-center gap-2 mt-2 text-xs text-default-500">
-                                            <Icon icon="material-symbols:shield-lock" width={16} className="text-primary" />
-                                            <span>Procesado por Mercado Pago · Tarjetas, Yape y Transferencia</span>
-                                        </div>
-                                    </div>
-
-                                    <Button
-                                        color="primary"
-                                        radius="lg"
-                                        size="lg"
-                                        isLoading={isSubmittingBalance}
-                                        onPress={handlePayBalanceWithMercadoPago}
-                                        className="font-bold shadow-md min-w-[240px]"
-                                        startContent={
-                                            !isSubmittingBalance && <Icon icon="material-symbols:lock" width={20} />
-                                        }
-                                    >
-                                        {isSubmittingBalance
-                                            ? "Conectando..."
-                                            : `Pagar ${formatCurrency(balance?.balance_due ?? (Number(balanceAmount) || 0))} con Mercado Pago`}
-                                    </Button>
-                                </div>
-                            </div>
-                        ) : null}
-
                         {role === "musician" &&
-                        booking.status === "payment_retained" &&
-                        (balance?.balance_due ?? 0) === 0 ? (
+                        booking.status === "payment_retained" ? (
                             <div className="flex flex-col gap-3">
                                 <div>
                                     <h4 className="font-semibold text-foreground">
@@ -602,23 +509,6 @@ export default function BookingConfirmedWorkspace({
                 />
             ) : null}
 
-            <BookingMercadoPagoModal
-                isOpen={isBalanceModalOpen}
-                onClose={() => setIsBalanceModalOpen(false)}
-                booking={booking}
-                paymentType="balance"
-                amount={balance?.balance_due ?? (Number(balanceAmount) || 0)}
-                onSuccess={async () => {
-                    try {
-                        const updated = await getBooking(booking.id);
-                        onUpdated(updated);
-                        const bal = await getBookingBalanceDue(booking.id);
-                        setBalance(bal);
-                    } catch {
-                        // ignore
-                    }
-                }}
-            />
         </div>
     );
 }

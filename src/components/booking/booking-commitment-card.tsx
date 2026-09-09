@@ -17,10 +17,10 @@ import {
     getBookingStatusTone,
 } from "@/lib/booking-labels";
 import {
-    contractorAdvanceDue,
     contractorPayableTotal,
-    contractorRemainingAfterAdvance,
     platformFeeAmount,
+    platformAppFeeAmount,
+    platformGatewayFeeAmount,
 } from "@/lib/platform-fee";
 import {
     buildGoogleMapsUrl,
@@ -33,7 +33,6 @@ type Role = Extract<UserRole, "musician" | "contractor">;
 
 type Props = {
     booking: BookingOut;
-    balanceDue: number | null;
     confirmed: boolean;
     canEdit: boolean;
     hasPendingChanges: boolean;
@@ -115,7 +114,6 @@ function MoneyRow({
 
 export default function BookingCommitmentCard({
     booking,
-    balanceDue,
     confirmed,
     canEdit,
     hasPendingChanges,
@@ -125,30 +123,18 @@ export default function BookingCommitmentCard({
     layout = "page",
 }: Props) {
     const isSidebar = layout === "sidebar";
-    const showBalance = confirmed || booking.status === "payment_pending";
     const tone = getBookingStatusTone(booking.status);
     const iconTone = BOOKING_STATUS_TONE_ICON[tone];
     const servicePrice =
         booking.price_agreed != null ? Number(booking.price_agreed) : null;
     const fee = platformFeeAmount(booking);
+    const appFee = platformAppFeeAmount(booking);
+    const gatewayFee = platformGatewayFeeAmount(booking);
     const feePercent =
         booking.platform_fee_percent != null
             ? Number(booking.platform_fee_percent)
             : null;
     const contractorTotal = contractorPayableTotal(booking);
-    const advanceDue = contractorAdvanceDue(booking);
-    const estimatedRemaining = contractorRemainingAfterAdvance(booking);
-    const displayBalance =
-        balanceDue != null
-            ? balanceDue
-            : role === "contractor"
-              ? estimatedRemaining
-              : booking.advance_amount != null && servicePrice != null
-                ? Math.max(0, servicePrice - Number(booking.advance_amount))
-                : null;
-    const showBalanceRow =
-        showBalance ||
-        (displayBalance != null && booking.advance_amount != null);
 
     const coords = parseLocationReference(booking.location_reference);
     const googleMapsUrl = buildGoogleMapsUrl({
@@ -480,12 +466,8 @@ export default function BookingCommitmentCard({
                                 />
                                 {role === "contractor" && fee > 0 ? (
                                     <MoneyRow
-                                        label="Comisión de plataforma"
-                                        hint={
-                                            feePercent != null
-                                                ? `${feePercent}% sobre el servicio`
-                                                : undefined
-                                        }
+                                        label="Tarifa de servicio"
+                                        hint="Incluye costos de procesamiento"
                                         value={formatCurrency(fee)}
                                         tone="muted"
                                     />
@@ -498,51 +480,10 @@ export default function BookingCommitmentCard({
                                 <div className="border-t border-default-200/70 bg-primary/5 px-3.5 py-3">
                                     <MoneyRow
                                         label="Total a pagar"
-                                        hint="Servicio + comisión"
+                                        hint="Servicio + tarifas"
                                         value={formatCurrency(contractorTotal)}
                                         tone="emphasis"
                                     />
-                                </div>
-                            ) : null}
-
-                            {booking.advance_amount != null || showBalanceRow ? (
-                                <div className="border-t border-default-200/70 px-3.5 py-3 flex flex-col gap-2.5 bg-default-50/40">
-                                    <p className="text-[10px] font-semibold uppercase tracking-wide text-default-400">
-                                        Desglose de pagos
-                                    </p>
-                                    {booking.advance_amount != null ? (
-                                        <MoneyRow
-                                            label="Anticipo"
-                                            hint={
-                                                role === "contractor" && fee > 0
-                                                    ? "Incluye la comisión"
-                                                    : undefined
-                                            }
-                                            value={formatCurrency(
-                                                role === "contractor" &&
-                                                    advanceDue != null
-                                                    ? advanceDue
-                                                    : Number(booking.advance_amount),
-                                            )}
-                                        />
-                                    ) : null}
-                                    {showBalanceRow ? (
-                                        <MoneyRow
-                                            label="Saldo restante"
-                                            hint="Por pagar después del anticipo"
-                                            value={
-                                                displayBalance != null
-                                                    ? formatCurrency(displayBalance)
-                                                    : "—"
-                                            }
-                                            tone={
-                                                displayBalance != null &&
-                                                displayBalance <= 0
-                                                    ? "success"
-                                                    : "emphasis"
-                                            }
-                                        />
-                                    ) : null}
                                 </div>
                             ) : null}
                         </div>

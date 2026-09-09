@@ -332,7 +332,6 @@ export default function AdminBookingDetailPage({ params }: Props) {
 
                 <AdminBookingTimelineCard
                     status={statusKey}
-                    balanceDue={booking.balance_due}
                     hasReview={Boolean(finalReview)}
                 />
             </div>

@@ -31,7 +31,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
             title: musician.name,
             description,
             path: `/musicians/${id}`,
-            image: musician.image ?? musician.galleryImages[0] ?? null,
         });
     } catch {
         return buildPageMetadata({

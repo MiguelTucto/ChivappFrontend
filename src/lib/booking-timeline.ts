@@ -6,7 +6,6 @@ export type TimelineStepId =
     | "contract"
     | "advance"
     | "confirmed"
-    | "balance"
     | "event"
     | "done";
 
@@ -26,7 +25,6 @@ const MAIN_FLOW: TimelineStepId[] = [
     "contract",
     "advance",
     "confirmed",
-    "balance",
     "event",
     "done",
 ];
@@ -54,22 +52,16 @@ const STEP_COPY: Record<
         contractor: "Elige repertorio, firma el contrato y confirma el pago.",
     },
     advance: {
-        title: "Anticipo",
-        description: "Pago seguro del anticipo con Mercado Pago.",
-        musician: "Anticipo acreditado en la plataforma.",
-        contractor: "Paga el anticipo con Mercado Pago.",
+        title: "Pago",
+        description: "Cobro único y seguro con Mercado Pago.",
+        musician: "Cobro acreditado en la plataforma.",
+        contractor: "Realiza el pago con Mercado Pago.",
     },
     confirmed: {
         title: "Reserva confirmada",
-        description: "Anticipo confirmado. Coordinación previa al evento.",
+        description: "Pago confirmado. Coordinación previa al evento.",
         musician: "Coordina detalles y responde cambios.",
         contractor: "Chatea, edita ubicación si hace falta.",
-    },
-    balance: {
-        title: "Saldo final",
-        description: "Pago del saldo restante antes del show.",
-        musician: "Abono final procesado.",
-        contractor: "Paga el saldo restante con Mercado Pago.",
     },
     event: {
         title: "Evento y reseña",
@@ -99,14 +91,11 @@ function statusToStepIndex(status: BookingStatus): number {
         case "payment_retained":
         case "change_pending":
             return 4;
-        case "balance_pending":
-        case "balance_review":
-            return 5;
         case "in_progress":
         case "payment_released":
-            return 6;
+            return 5;
         case "completed":
-            return 7;
+            return 6;
         case "cancelled":
             return -1;
         default:
@@ -145,34 +134,18 @@ export function buildBookingTimeline(
         hasReview &&
         (status === "in_progress" || status === "payment_released")
     ) {
-        currentIndex = 7; // "done" como paso actual pendiente de confirmar
+        currentIndex = 6; // "done" como paso actual pendiente de confirmar
     }
-
-    const skipBalance =
-        options?.balanceDue != null &&
-        options.balanceDue <= 0 &&
-        currentIndex >= 4;
 
     const steps: BookingTimelineStep[] = MAIN_FLOW.map((id, index) => {
         const copy = STEP_COPY[id];
         let state: TimelineStepState = "upcoming";
 
-        if (id === "balance" && skipBalance && currentIndex > 5) {
-            state = "skipped";
-        } else if (id === "balance" && skipBalance && currentIndex === 4) {
-            state = "upcoming";
-        } else if (index < currentIndex) {
+        if (index < currentIndex) {
             state = "done";
         } else if (index === currentIndex) {
             // Completada: el paso final es "hecho" (verde), no "actual".
             state = status === "completed" ? "done" : "current";
-        }
-
-        if (id === "balance" && skipBalance && currentIndex >= 6) {
-            state = "done";
-        }
-        if (id === "balance" && skipBalance && currentIndex === 4) {
-            state = "done";
         }
 
         // Si ya hay reseña y aún no está completed, evento = hecho y final = actual
@@ -185,7 +158,7 @@ export function buildBookingTimeline(
         }
 
         // Reserva finalizada (cliente o músico): todo el camino en verde.
-        if (status === "completed" && state !== "skipped") {
+        if (status === "completed") {
             state = "done";
         }
 
@@ -205,50 +178,44 @@ export function buildBookingTimeline(
                 : "Espera la respuesta del músico a tu cambio.";
         steps[4].description = "Cambio de ubicación/detalles en revisión.";
     }
-    if (status === "balance_review" && steps[5]) {
-        steps[5].actorHint =
-            role === "musician"
-                ? "Procesando el pago del saldo con Mercado Pago."
-                : "Tu pago del saldo está en procesamiento con Mercado Pago.";
-    }
     if (status === "payment_pending" && steps[3]) {
         steps[3].actorHint =
             role === "musician"
-                ? "Procesando el pago del anticipo con Mercado Pago."
-                : "Tu pago del anticipo está en procesamiento con Mercado Pago.";
+                ? "Procesando el pago con Mercado Pago."
+                : "Tu pago está en procesamiento con Mercado Pago.";
     }
     if (
         (status === "in_progress" || status === "payment_released") &&
         !hasReview &&
-        steps[6]
+        steps[5]
     ) {
-        steps[6].actorHint =
+        steps[5].actorHint =
             role === "musician"
                 ? "Espera que el contratista finalice (incluirá su reseña)."
                 : "Puedes finalizar: te pediremos la reseña final del show.";
     }
     if (
         (status === "in_progress" || status === "payment_released") &&
-        steps[7]
+        steps[6]
     ) {
         if (hasReview) {
-            steps[7].actorHint =
+            steps[6].actorHint =
                 role === "musician"
                     ? "La reseña final ya está. Puedes finalizar la contratación."
                     : "Reseña final lista. Confirma para finalizar la contratación.";
-            steps[7].description =
+            steps[6].description =
                 "Todo listo: confirma el cierre para liberar pagos.";
         } else if (role === "contractor") {
-            steps[7].actorHint =
+            steps[6].actorHint =
                 "Al finalizar te pediremos estrellas y un comentario del show.";
-            steps[7].description =
+            steps[6].description =
                 "Cierra la contratación; la reseña final se captura en ese paso.";
         }
     }
 
-    if (status === "completed" && steps[7]) {
-        steps[7].description = "Contratación cerrada. Esta reserva quedó finalizada.";
-        steps[7].actorHint =
+    if (status === "completed" && steps[6]) {
+        steps[6].description = "Contratación cerrada. Esta reserva quedó finalizada.";
+        steps[6].actorHint =
             role === "musician"
                 ? "Cierre confirmado. Ya no hay acciones pendientes."
                 : "Cierre confirmado. Gracias por tu reseña y por usar la plataforma.";
@@ -284,7 +251,6 @@ export type CompletionGate = {
 export function getCompletionGates(
     status: BookingStatus,
     options?: {
-        balanceDue?: number | null;
         hasReview?: boolean;
         role?: "musician" | "contractor";
     },
@@ -293,18 +259,11 @@ export function getCompletionGates(
     gates: CompletionGate[];
     missing: CompletionGate[];
 } {
-    const balanceDue = options?.balanceDue ?? null;
     const hasReview = Boolean(options?.hasReview);
     const role = options?.role;
     const statusIndex = statusToStepIndex(status);
 
     const confirmedDone = statusIndex >= 4 && status !== "cancelled";
-    const balanceDone =
-        statusIndex >= 6 ||
-        (balanceDue != null && balanceDue <= 0 && statusIndex >= 4) ||
-        status === "in_progress" ||
-        status === "payment_released" ||
-        status === "completed";
     const eventPhaseDone =
         status === "in_progress" ||
         status === "payment_released" ||
@@ -317,13 +276,7 @@ export function getCompletionGates(
             id: "confirmed",
             title: "Reserva confirmada",
             done: confirmedDone,
-            hint: "El anticipo debe estar validado.",
-        },
-        {
-            id: "balance",
-            title: "Abono final cubierto",
-            done: balanceDone,
-            hint: "Debe pagarse y validarse el saldo (o no haber saldo pendiente).",
+            hint: "El pago debe estar validado.",
         },
         {
             id: "event",

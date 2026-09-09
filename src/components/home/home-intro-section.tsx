@@ -64,7 +64,7 @@ export default function HomeIntroSection({ musicians, hasMoreMusicians = false }
               "stick" lo define el propio &lt;section&gt;, que mide lo que ocupan
               las cards.
             */}
-            <div className="sticky bottom-10 sm:bottom-14 z-40 h-0 flex items-center justify-center pointer-events-none">
+            <div className="sticky bottom-10 sm:bottom-14 z-[100] h-0 flex items-center justify-center pointer-events-none">
                 <button
                     type="button"
                     onClick={scrollToNextSection}

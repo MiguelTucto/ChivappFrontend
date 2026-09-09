@@ -56,7 +56,7 @@ export function buildPageMetadata({
     noIndex = false,
 }: BuildPageMetadataInput): Metadata {
     const url = absoluteUrl(path);
-    const ogImage = absoluteImageUrl(image) ?? absoluteUrl("/opengraph-image");
+    const ogImage = image ? absoluteImageUrl(image) : undefined;
     const isRoot = title === SITE_NAME;
     const fullTitle = isRoot ? SITE_NAME : `${title} | ${SITE_NAME}`;
 
@@ -74,20 +74,22 @@ export function buildPageMetadata({
             title: fullTitle,
             description,
             url,
-            images: [
-                {
-                    url: ogImage,
-                    width: 1200,
-                    height: 630,
-                    alt: fullTitle,
-                },
-            ],
+            ...(ogImage && {
+                images: [
+                    {
+                        url: ogImage,
+                        width: 1200,
+                        height: 630,
+                        alt: fullTitle,
+                    },
+                ],
+            }),
         },
         twitter: {
             card: "summary_large_image",
             title: fullTitle,
             description,
-            images: [ogImage],
+            ...(ogImage && { images: [ogImage] }),
         },
     };
 }

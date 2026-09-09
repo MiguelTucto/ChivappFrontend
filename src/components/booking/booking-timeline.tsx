@@ -13,7 +13,6 @@ import type { BookingStatus, UserRole } from "@/types/api";
 type Props = {
     status: BookingStatus;
     role: Extract<UserRole, "musician" | "contractor">;
-    balanceDue?: number | null;
     hasReview?: boolean;
     /** vertical = sidebar list; horizontal = top progress rail */
     orientation?: "vertical" | "horizontal";
@@ -36,7 +35,6 @@ const PHASE_ICON: Record<string, string> = {
     contract: "material-symbols:contract-outline",
     advance: "material-symbols:account-balance-wallet-outline",
     confirmed: "material-symbols:event-available-outline-rounded",
-    balance: "material-symbols:payments-outline-rounded",
     event: "material-symbols:music-note-rounded",
     done: "material-symbols:flag-rounded",
 };
@@ -616,14 +614,13 @@ function VerticalTimeline({
 export default function BookingTimeline({
     status,
     role,
-    balanceDue = null,
     hasReview = false,
     orientation = "vertical",
     sticky = true,
     collapseOnScroll = false,
     backHref,
 }: Props) {
-    const timeline = buildBookingTimeline(status, role, { balanceDue, hasReview });
+    const timeline = buildBookingTimeline(status, role, { hasReview });
 
     if (timeline.isCancelled) {
         return <CancelledBanner message={timeline.nextAction} />;

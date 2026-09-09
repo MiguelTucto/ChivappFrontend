@@ -37,7 +37,6 @@ export default function BookingDetailView({ bookingId, role }: Props) {
     const [isLoading, setIsLoading] = useState(true);
     const [isCancelling, setIsCancelling] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(false);
-    const [balanceDue, setBalanceDue] = useState<number | null>(null);
     const [amountPaid, setAmountPaid] = useState<number | null>(null);
     const [hasReview, setHasReview] = useState(false);
     const [isEditOpen, setIsEditOpen] = useState(false);
@@ -55,17 +54,14 @@ export default function BookingDetailView({ bookingId, role }: Props) {
         ) {
             getBookingBalanceDue(bookingData.id)
                 .then((balance) => {
-                    setBalanceDue(balance.balance_due);
                     setAmountPaid(
                         balance.amount_paid != null ? balance.amount_paid : null,
                     );
                 })
                 .catch(() => {
-                    setBalanceDue(null);
                     setAmountPaid(null);
                 });
         } else {
-            setBalanceDue(null);
             setAmountPaid(null);
         }
     }
@@ -299,19 +295,16 @@ export default function BookingDetailView({ bookingId, role }: Props) {
             <BookingTimeline
                 status={booking.status}
                 role={role}
-                balanceDue={balanceDue}
                 hasReview={hasReview}
                 orientation="horizontal"
                 collapseOnScroll
                 backHref={listHref}
             />
 
-            {/* Detalle del compromiso (izq.) + acciones (der.) */}
             <div className="mt-4 sm:mt-6 grid grid-cols-1 lg:grid-cols-[minmax(300px,380px)_minmax(0,1fr)] gap-4 sm:gap-6 items-start">
                 <aside className="order-2 lg:order-1 lg:sticky lg:top-[calc(var(--app-navbar-height)+var(--booking-timeline-height,0px)+0.75rem)] lg:self-start min-w-0">
                     <BookingCommitmentCard
                         booking={booking}
-                        balanceDue={balanceDue}
                         confirmed={confirmed}
                         canEdit={canEditCommitment}
                         hasPendingChanges={hasPendingChanges}

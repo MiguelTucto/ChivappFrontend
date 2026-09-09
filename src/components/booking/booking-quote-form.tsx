@@ -32,7 +32,6 @@ export default function BookingQuoteForm({ booking, onUpdated }: Props) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isRejecting, setIsRejecting] = useState(false);
     const [priceAgreed, setPriceAgreed] = useState("");
-    const [advanceAmount, setAdvanceAmount] = useState("");
     const [quoteNotes, setQuoteNotes] = useState("");
     const [locationAddress, setLocationAddress] = useState(booking.location_address);
     const [locationCity, setLocationCity] = useState(booking.location_city ?? "");
@@ -48,9 +47,6 @@ export default function BookingQuoteForm({ booking, onUpdated }: Props) {
     useEffect(() => {
         setPriceAgreed(
             booking.price_agreed != null ? String(Number(booking.price_agreed)) : "",
-        );
-        setAdvanceAmount(
-            booking.advance_amount != null ? String(Number(booking.advance_amount)) : "",
         );
         setQuoteNotes(booking.musician_quote_notes ?? "");
         setLocationAddress(booking.location_address);
@@ -79,27 +75,15 @@ export default function BookingQuoteForm({ booking, onUpdated }: Props) {
     }, [booking.platform_fee_percent]);
 
     const pricePreview = Number(priceAgreed);
-    const advancePreview = Number(advanceAmount);
     const feePreview = useMemo(() => {
         if (!pricePreview || pricePreview <= 0) return 0;
         return platformFeeAmount({
             price_agreed: pricePreview,
             platform_fee_percent: platformFeePercent,
-            platform_fee_amount: null,
         });
     }, [pricePreview, platformFeePercent]);
     const contractorTotalPreview =
         pricePreview > 0 ? roundMoney(pricePreview + feePreview) : null;
-    const hasValidAdvance =
-        advanceAmount !== "" &&
-        !Number.isNaN(advancePreview) &&
-        advancePreview >= 0 &&
-        pricePreview > 0 &&
-        advancePreview <= pricePreview;
-    const remainingPreview =
-        contractorTotalPreview != null && hasValidAdvance
-            ? roundMoney(contractorTotalPreview - advancePreview)
-            : null;
 
     async function handleSubmit(event: FormEvent) {
         event.preventDefault();
@@ -113,24 +97,11 @@ export default function BookingQuoteForm({ booking, onUpdated }: Props) {
             return;
         }
 
-        if (advanceAmount) {
-            const advance = Number(advanceAmount);
-            if (advance < 0 || advance > price) {
-                addToast({
-                    title: "Anticipo inválido",
-                    description:
-                        "El anticipo debe ser mayor o igual a 0 y no superar el precio total.",
-                    color: "warning",
-                });
-                return;
-            }
-        }
-
         setIsSubmitting(true);
         try {
             const updated = await quoteBooking(booking.id, {
                 price_agreed: price,
-                advance_amount: advanceAmount ? Number(advanceAmount) : null,
+                advance_amount: price,
                 musician_quote_notes: quoteNotes.trim() || null,
                 location_address: locationAddress.trim() || null,
                 location_city: locationCity.trim() || null,
@@ -202,7 +173,7 @@ export default function BookingQuoteForm({ booking, onUpdated }: Props) {
             </CardHeader>
             <CardBody className="px-6 pb-6">
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1">
                         <Input
                             label="Precio del servicio (S/)"
                             type="number"
@@ -212,15 +183,6 @@ export default function BookingQuoteForm({ booking, onUpdated }: Props) {
                             variant="bordered"
                             isRequired
                             description="Lo que tú recibes por el servicio."
-                        />
-                        <Input
-                            label="Anticipo sugerido (S/)"
-                            type="number"
-                            min="0"
-                            value={advanceAmount}
-                            onValueChange={setAdvanceAmount}
-                            variant="bordered"
-                            description="Opcional. Monto inicial del servicio que solicitas."
                         />
                     </div>
                     {contractorTotalPreview != null ? (
@@ -234,26 +196,10 @@ export default function BookingQuoteForm({ booking, onUpdated }: Props) {
                             <p className="text-default-500">
                                 Servicio {formatCurrency(pricePreview)}
                                 {feePreview > 0
-                                    ? ` + comisión plataforma ${platformFeePercent}% (${formatCurrency(feePreview)})`
+                                    ? ` + comisión plataforma y pasarela de pagos (${formatCurrency(feePreview)})`
                                     : " · sin comisión de plataforma"}
                                 . Tú recibes el precio del servicio íntegro.
                             </p>
-                            {hasValidAdvance ? (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 border-t border-primary/10">
-                                    <p className="text-default-600">
-                                        Anticipo a transferir:{" "}
-                                        <span className="font-semibold text-foreground">
-                                            {formatCurrency(advancePreview)}
-                                        </span>
-                                    </p>
-                                    <p className="text-default-600">
-                                        Saldo restante:{" "}
-                                        <span className="font-semibold text-foreground">
-                                            {formatCurrency(remainingPreview ?? 0)}
-                                        </span>
-                                    </p>
-                                </div>
-                            ) : null}
                         </div>
                     ) : null}
                     <Textarea

@@ -7,7 +7,6 @@ import type { BookingStatus } from "@/types/api";
 
 type Props = {
     status: BookingStatus;
-    balanceDue?: number | null;
     hasReview?: boolean;
 };
 
@@ -27,9 +26,8 @@ const STATE_COLOR: Record<string, string> = {
 
 /** Timeline de solo lectura para admin: el rol pasado a buildBookingTimeline solo
  * afecta el copy en 2da persona (actorHint), que no se muestra aquí. */
-export default function AdminBookingTimelineCard({ status, balanceDue, hasReview }: Props) {
+export default function AdminBookingTimelineCard({ status, hasReview }: Props) {
     const timeline = buildBookingTimeline(status, "contractor", {
-        balanceDue,
         hasReview,
     });
 

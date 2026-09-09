@@ -14,6 +14,8 @@ import {
     contractorPayableTotal,
     contractorRemainingAfterAdvance,
     platformFeeAmount,
+    platformAppFeeAmount,
+    platformGatewayFeeAmount,
 } from "@/lib/platform-fee";
 import type { BookingOut } from "@/types/api";
 
@@ -63,6 +65,8 @@ export default function BookingQuoteReviewCard({
 }: Props) {
     const total = booking.price_agreed != null ? Number(booking.price_agreed) : null;
     const fee = platformFeeAmount(booking);
+    const appFee = platformAppFeeAmount(booking);
+    const gatewayFee = platformGatewayFeeAmount(booking);
     const contractorTotal = contractorPayableTotal(booking);
     const advanceDue = contractorAdvanceDue(booking);
     const balance = contractorRemainingAfterAdvance(booking);
@@ -90,56 +94,35 @@ export default function BookingQuoteReviewCard({
                             <p className="text-3xl font-bold text-primary">
                                 {formatCurrency(contractorTotal)}
                             </p>
-                            {fee > 0 ? (
-                                <p className="text-xs text-default-500 mt-1">
-                                    Incluye comisión {formatCurrency(fee)}
-                                </p>
-                            ) : null}
                         </div>
                     ) : null}
                 </div>
             </div>
 
             <CardBody className="gap-6 p-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                    <PriceStat
-                        label="Precio del servicio"
-                        value={total != null ? formatCurrency(total) : "—"}
-                    />
-                    <PriceStat
-                        label={
-                            booking.platform_fee_percent != null &&
-                            Number(booking.platform_fee_percent) > 0
-                                ? `Comisión (${Number(booking.platform_fee_percent)}%)`
-                                : "Comisión plataforma"
-                        }
-                        value={fee > 0 ? formatCurrency(fee) : "Sin comisión"}
-                    />
-                    <PriceStat
-                        label="Anticipo a transferir"
-                        value={
-                            advanceDue != null
-                                ? formatCurrency(advanceDue)
-                                : "Pago total"
-                        }
-                        highlight
-                    />
-                    <PriceStat
-                        label="Saldo restante"
-                        value={
-                            balance != null
-                                ? formatCurrency(balance)
-                                : total != null
-                                  ? formatCurrency(total)
-                                  : "—"
-                        }
-                    />
+                <div className="rounded-2xl border border-default-200 bg-default-50/50 p-5">
+                    <p className="font-semibold text-foreground mb-4">Desglose del pago único</p>
+                    <div className="flex flex-col gap-3 text-sm">
+                        <div className="flex justify-between items-center">
+                            <span className="text-default-600">Tarifa del músico</span>
+                            <span className="font-medium text-foreground">{total != null ? formatCurrency(total) : "—"}</span>
+                        </div>
+                        {fee > 0 && (
+                            <div className="flex justify-between items-center">
+                                <span className="text-default-600">Tarifa de servicio</span>
+                                <span className="font-medium text-foreground">{formatCurrency(fee)}</span>
+                            </div>
+                        )}
+                        <Divider className="my-1" />
+                        <div className="flex justify-between items-center text-base">
+                            <span className="font-bold text-foreground">Total a pagar</span>
+                            <span className="font-bold text-primary">{contractorTotal != null ? formatCurrency(contractorTotal) : "—"}</span>
+                        </div>
+                    </div>
                 </div>
                 {fee > 0 ? (
-                    <p className="text-sm text-default-600 -mt-2">
-                        El músico recibe el precio del servicio. La comisión de
-                        plataforma la paga el contratista y se liquida en el saldo
-                        restante (total − anticipo).
+                    <p className="text-xs text-default-500 -mt-2">
+                        * El músico recibe su tarifa íntegra. La tarifa de servicio incluye la comisión de la plataforma y los costos de procesamiento bancario.
                     </p>
                 ) : null}
 
