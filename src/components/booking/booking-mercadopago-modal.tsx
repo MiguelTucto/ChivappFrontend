@@ -255,6 +255,7 @@ export default function BookingMercadoPagoModal({
                 payment_type: paymentType,
                 token: token,
                 payment_method_id: "yape",
+                payer_email: user?.email || undefined,
                 signature_image_url: signatureImageUrl,
                 amount: yapeAmount,
             });
