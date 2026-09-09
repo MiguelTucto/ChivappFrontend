@@ -398,7 +398,9 @@ function StickyCollapsingHorizontalTimeline({
         if (!sentinel) return;
 
         const observer = new IntersectionObserver(
-            ([entry]) => {
+            (entries) => {
+                const entry = entries[0];
+                if (!entry) return;
                 // Si el sentinel (ancla del Expanded card) deja de ser visible arriba, colapsamos
                 setCollapsed(!entry.isIntersecting);
             },
