@@ -42,11 +42,12 @@ export default function BookingMercadoPagoModal({
     onSuccess,
 }: Props) {
     const { user } = useAuth();
-    const { isLoaded, loadError, createYapeToken, renderPaymentBrick } = useMercadoPago();
+    const { isLoaded, loadError, createYapeToken, renderPaymentBrick, getDeviceSessionId } = useMercadoPago();
 
     const [selectedTab, setSelectedTab] = useState<string>("yape");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [otp, setOtp] = useState("");
+    const [yapeDocNumber, setYapeDocNumber] = useState("");
     const [cardPayerEmail, setCardPayerEmail] = useState<string>(user?.email || "");
     const cardPayerEmailRef = useRef(cardPayerEmail);
     useEffect(() => {
@@ -66,6 +67,7 @@ export default function BookingMercadoPagoModal({
             setIsProcessing(false);
             setPhoneNumber("");
             setOtp("");
+            setYapeDocNumber("");
             if (user?.email) {
                 setCardPayerEmail(user.email);
             }
@@ -144,6 +146,7 @@ export default function BookingMercadoPagoModal({
                                     issuer_id: issuerId,
                                     installments: Number(installments) || 1,
                                     payer_email: resolvedEmail,
+                                    device_id: getDeviceSessionId(),
                                     identification_type: idType,
                                     identification_number: idNumber,
                                     signature_image_url: signatureImageUrl,
@@ -256,6 +259,9 @@ export default function BookingMercadoPagoModal({
                 token: token,
                 payment_method_id: "yape",
                 payer_email: user?.email || undefined,
+                device_id: getDeviceSessionId(),
+                identification_type: yapeDocNumber.trim() ? "DNI" : undefined,
+                identification_number: yapeDocNumber.trim() || undefined,
                 signature_image_url: signatureImageUrl,
                 amount: yapeAmount,
             });
@@ -453,6 +459,18 @@ export default function BookingMercadoPagoModal({
                                                 variant="bordered"
                                                 isDisabled={isProcessing}
                                             />
+                                            <Input
+                                                label="DNI del titular de Yape"
+                                                placeholder="12345678"
+                                                value={yapeDocNumber}
+                                                onValueChange={setYapeDocNumber}
+                                                maxLength={15}
+                                                variant="bordered"
+                                                isDisabled={isProcessing}
+                                                description="Para validar tu pago de forma segura."
+                                            />
+                                        </div>
+                                        <div className="grid grid-cols-1 sm:grid-cols-1 gap-4">
 
                                             <Input
                                                 label="Código de Aprobación (OTP)"

@@ -63,6 +63,7 @@ export type MercadoPagoProcessPaymentRequest = {
     installments?: number;
     issuer_id?: string;
     payer_email?: string;
+    device_id?: string;
     identification_type?: string;
     identification_number?: string;
     signature_image_url?: string | null;

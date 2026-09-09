@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 
 declare global {
     interface Window {
+        MP_DEVICE_SESSION_ID?: string;
         MercadoPago?: new (
             publicKey: string,
             options?: { locale?: string; advancedFraudPrevention?: boolean }
@@ -24,6 +25,7 @@ declare global {
 }
 
 const MP_SDK_URL = "https://sdk.mercadopago.com/js/v2";
+const MP_SECURITY_URL = "https://www.mercadopago.com/v2/security.js";
 
 export function useMercadoPago() {
     const [isLoaded, setIsLoaded] = useState(false);
@@ -33,6 +35,23 @@ export function useMercadoPago() {
     const [publicKey, setPublicKey] = useState<string>(
         process.env.NEXT_PUBLIC_MERCADO_PAGO_PUBLIC_KEY || ""
     );
+
+    // Load security.js for device session ID
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+        const existingSecurityScript = document.querySelector(`script[src="${MP_SECURITY_URL}"]`);
+        if (!existingSecurityScript) {
+            const script = document.createElement("script");
+            script.src = MP_SECURITY_URL;
+            script.async = true;
+            script.setAttribute("view", "checkout");
+            document.body.appendChild(script);
+        }
+    }, []);
+
+    const getDeviceSessionId = useCallback(() => {
+        return window.MP_DEVICE_SESSION_ID || undefined;
+    }, []);
 
     useEffect(() => {
         let isMounted = true;
@@ -225,5 +244,6 @@ export function useMercadoPago() {
         mp: mpInstanceRef.current,
         createYapeToken,
         renderPaymentBrick,
+        getDeviceSessionId,
     };
 }
