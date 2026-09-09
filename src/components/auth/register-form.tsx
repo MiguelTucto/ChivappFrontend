@@ -165,12 +165,12 @@ export default function RegisterForm({
                           : "No se pudo completar el registro social. Intenta de nuevo o ingresa con tu correo."}
                 </p>
             ) : null}
-            <SocialAuthButtons intent="login" />
+            {/* <SocialAuthButtons intent="login" />
             <div className="flex items-center gap-3">
                 <Divider className="flex-1" />
                 <span className="text-xs text-default-400">o con email</span>
                 <Divider className="flex-1" />
-            </div>
+            </div> */}
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 {formAlert ? (
                     <div

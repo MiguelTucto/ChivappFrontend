@@ -311,7 +311,7 @@ export default function AppNavbar({ revealOnScroll = false }: Props) {
                                 color="primary"
                                 radius="lg"
                                 size="sm"
-                                className="font-semibold text-sm shadow-glow hover:shadow-glow-lg transition-shadow min-w-0 px-2.5 sm:px-4"
+                                className="font-semibold text-sm transition-shadow min-w-0 px-2.5 sm:px-4"
                                 onPress={() => openRegister()}
                             >
                                 <span className="sm:hidden">Registro</span>
