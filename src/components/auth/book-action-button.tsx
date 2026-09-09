@@ -56,7 +56,7 @@ export default function BookActionButton({
 
     if (!user) {
         return (
-            <div className={fullWidth ? "w-full" : undefined}>
+            <div className={fullWidth ? "w-full" : "flex flex-col gap-2"}>
                 <Button
                     color="primary"
                     radius={radius}
@@ -69,19 +69,16 @@ export default function BookActionButton({
                 >
                     Inicia sesión para contratar
                 </Button>
-                {showHelper && (
-                    <p className="text-sm text-default-500 mt-3">
-                        Puedes explorar perfiles sin cuenta. Para enviar una solicitud de
-                        reserva necesitas iniciar sesión como contratista.
-                    </p>
-                )}
+                <p className="text-sm text-default-500 max-w-xs leading-snug">
+                    Debes iniciar sesión y verificar tus datos para poder generar una reserva.
+                </p>
             </div>
         );
     }
 
     if (user.role !== "contractor") {
         return (
-            <div className={fullWidth ? "w-full" : undefined}>
+            <div className={fullWidth ? "w-full" : "flex flex-col gap-2"}>
                 <Button
                     isDisabled
                     color="primary"
@@ -91,12 +88,28 @@ export default function BookActionButton({
                 >
                     {label}
                 </Button>
-                {showHelper && (
-                    <p className="text-sm text-default-500 mt-3">
-                        Solo los contratistas pueden enviar solicitudes de reserva. Como
-                        músico puedes explorar perfiles y gestionar tus propias reservas.
-                    </p>
-                )}
+                <p className="text-sm text-default-500 max-w-xs leading-snug">
+                    Solo los contratistas pueden enviar solicitudes de reserva.
+                </p>
+            </div>
+        );
+    }
+
+    if (!user.is_verified) {
+        return (
+            <div className={fullWidth ? "w-full" : "flex flex-col gap-2"}>
+                <Button
+                    isDisabled
+                    color="primary"
+                    radius={radius}
+                    size={size}
+                    className={`${className} ${widthClass}`}
+                >
+                    {label}
+                </Button>
+                <p className="text-sm text-warning-600 dark:text-warning-500 font-medium max-w-xs leading-snug">
+                    Debes verificar tus datos en "Mi Perfil" para poder reservar.
+                </p>
             </div>
         );
     }
