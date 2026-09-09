@@ -379,6 +379,18 @@ export default function BookingMercadoPagoModal({
                                 </div>
                             )}
 
+                            {/* Alerta de Seguridad de Mercado Pago */}
+                            <div className="p-3.5 rounded-xl bg-warning-50 dark:bg-warning-900/20 border border-warning-200 text-warning-800 dark:text-warning-300 text-xs flex items-start gap-2.5">
+                                <Icon icon="solar:shield-warning-bold" className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                                <div>
+                                    <p className="font-semibold text-sm">Política de seguridad</p>
+                                    <p className="mt-1">
+                                        Para evitar bloqueos por el sistema antifraude (cc_rejected_high_risk), <strong>Mercado Pago prohíbe las auto-compras</strong>. 
+                                        No intentes pagarte a ti mismo utilizando tarjetas, cuentas de Yape, IPs o redes Wi-Fi asociadas a tu propia cuenta de cobro.
+                                    </p>
+                                </div>
+                            </div>
+
                             {/* Error de Carga SDK */}
                             {loadError && (
                                 <div className="p-3.5 rounded-xl bg-warning-50 border border-warning-200 text-warning text-sm">
