@@ -390,94 +390,73 @@ function StickyCollapsingHorizontalTimeline({
     timeline: ReturnType<typeof buildBookingTimeline>;
     backHref?: string;
 }) {
-    const shellRef = useRef<HTMLDivElement | null>(null);
+    const sentinelRef = useRef<HTMLDivElement | null>(null);
     const [collapsed, setCollapsed] = useState(false);
 
     useEffect(() => {
-        let rafId: number | null = null;
+        const sentinel = sentinelRef.current;
+        if (!sentinel) return;
 
-        const handleScroll = () => {
-            if (rafId !== null) return;
-            rafId = window.requestAnimationFrame(() => {
-                rafId = null;
-                const scrollY = window.scrollY || document.documentElement.scrollTop;
-                // Histéresis limpia: colapsa al hacer scroll (> 120px) y solo re-expande cerca del top (< 40px)
-                if (scrollY > 120) {
-                    setCollapsed(true);
-                } else if (scrollY < 40) {
-                    setCollapsed(false);
-                }
-            });
-        };
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                // Si el sentinel (ancla del Expanded card) deja de ser visible arriba, colapsamos
+                setCollapsed(!entry.isIntersecting);
+            },
+            {
+                root: null,
+                threshold: 0,
+                // Agregamos un margen negativo superior equivalente a la altura del navbar
+                // para que el evento dispare justo cuando el card toca el navbar.
+                rootMargin: `calc(-1 * var(--app-navbar-height, 64px)) 0px 0px 0px`,
+            },
+        );
 
-        window.addEventListener("scroll", handleScroll, { passive: true });
-        handleScroll();
-
-        return () => {
-            if (rafId !== null) window.cancelAnimationFrame(rafId);
-            window.removeEventListener("scroll", handleScroll);
-        };
+        observer.observe(sentinel);
+        return () => observer.disconnect();
     }, []);
 
     useEffect(() => {
-        const shell = shellRef.current;
-        if (!shell) return;
-
-        const updateHeight = () => {
-            const height = Math.ceil(shell.getBoundingClientRect().height);
-            document.documentElement.style.setProperty(
-                "--booking-timeline-height",
-                `${height}px`,
-            );
-        };
-
-        updateHeight();
-        const timer = setTimeout(updateHeight, 280);
-
-        return () => {
-            clearTimeout(timer);
-        };
+        const height = collapsed ? 64 : 0;
+        document.documentElement.style.setProperty(
+            "--booking-timeline-height",
+            `${height}px`,
+        );
     }, [collapsed]);
 
     return (
-        <div
-            ref={shellRef}
-            className={`sticky z-40 top-[var(--app-navbar-height)] transition-[padding,background-color,border-color,backdrop-filter] ${TRANSITION} ${
-                collapsed
-                    ? "bg-background/85 backdrop-blur-xl border-b border-default-200/50 py-2 sm:py-2.5 -mx-4 px-4 lg:-mx-8 lg:px-8 shadow-xs"
-                    : "bg-transparent border-b border-transparent py-0 mb-1"
-            }`}
-        >
-            <div className="max-w-6xl mx-auto">
-                <div
-                    className={`overflow-hidden transition-all ${TRANSITION} ${
-                        collapsed
-                            ? "max-h-0 opacity-0 -translate-y-1 scale-[0.99] pointer-events-none"
-                            : "max-h-96 opacity-100 translate-y-0 scale-100"
-                    }`}
-                    aria-hidden={collapsed}
-                >
-                    <ExpandedTimelineCard
-                        status={status}
-                        timeline={timeline}
-                        backHref={backHref}
-                    />
-                </div>
-                <div
-                    className={`overflow-hidden transition-all ${TRANSITION} ${
-                        collapsed
-                            ? "max-h-24 opacity-100 translate-y-0 scale-100"
-                            : "max-h-0 opacity-0 translate-y-1 scale-[0.99] pointer-events-none"
-                    }`}
-                    aria-hidden={!collapsed}
-                >
-                    <div className="flex items-center gap-2">
-                        {backHref ? (
-                            <TimelineBackButton href={backHref} />
-                        ) : null}
-                        <div className="min-w-0 flex-1">
-                            <CollapsedPhaseRail steps={timeline.steps} />
-                        </div>
+        <div className="relative w-full">
+            {/* Ancla para observar el scroll */}
+            <div ref={sentinelRef} className="absolute top-0 w-full h-px pointer-events-none" />
+
+            {/* Versión Expandida Estática (Flujo Normal) */}
+            <div
+                className={`transition-opacity duration-300 ${
+                    collapsed ? "opacity-0 pointer-events-none" : "opacity-100"
+                }`}
+                aria-hidden={collapsed}
+            >
+                <ExpandedTimelineCard
+                    status={status}
+                    timeline={timeline}
+                    backHref={backHref}
+                />
+            </div>
+
+            {/* Versión Colapsada Flotante (Filtros Style) */}
+            <div
+                className={`fixed z-40 left-0 right-0 pointer-events-none flex justify-center transition-all duration-300 ease-out px-4 ${
+                    collapsed
+                        ? "top-[calc(var(--app-navbar-height)+0.75rem)] opacity-100 translate-y-0"
+                        : "top-[calc(var(--app-navbar-height)-2rem)] opacity-0 -translate-y-4"
+                }`}
+                aria-hidden={!collapsed}
+            >
+                <div className="pointer-events-auto flex items-center gap-2 max-w-full rounded-full border border-default-200/60 bg-content1/85 backdrop-blur-md shadow-soft px-4 py-2">
+                    {backHref ? (
+                        <TimelineBackButton href={backHref} />
+                    ) : null}
+                    <div className="min-w-0 flex-1">
+                        <CollapsedPhaseRail steps={timeline.steps} />
                     </div>
                 </div>
             </div>

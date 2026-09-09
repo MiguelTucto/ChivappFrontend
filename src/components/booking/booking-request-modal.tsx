@@ -28,9 +28,9 @@ export default function BookingRequestModal({ musician, isOpen, onOpenChange }: 
             scrollBehavior="inside"
             placement="center"
             classNames={{
-                base: "mx-2 sm:mx-auto max-w-[calc(100vw-1rem)] sm:max-w-3xl",
+                base: "mx-2 sm:mx-auto max-w-[calc(100vw-1rem)] sm:max-w-3xl max-h-[92vh]",
                 wrapper: "items-end sm:items-center",
-                body: "px-4 sm:px-6",
+                body: "px-4 sm:px-6 overflow-y-auto",
                 header: "px-4 sm:px-6",
             }}
         >

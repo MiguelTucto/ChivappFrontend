@@ -189,10 +189,11 @@ export default function BookingEditCommitmentModal({
             scrollBehavior="inside"
             placement="center"
             classNames={{
-                base: "mx-2 sm:mx-auto max-w-[calc(100vw-1rem)] sm:max-w-3xl max-h-[92vh]",
+                base: "mx-2 sm:mx-auto max-w-[calc(100vw-1rem)] sm:max-w-xl max-h-[92vh]",
                 wrapper: "items-end sm:items-center",
-                body: "px-4 sm:px-6 py-2",
-                header: "px-4 sm:px-6",
+                body: "px-4 sm:px-6 overflow-y-auto",
+                header: "px-4 sm:px-6 pt-5 pb-3",
+                footer: "px-4 sm:px-6 pb-5 pt-3",
             }}
         >
             <ModalContent>

@@ -37,7 +37,7 @@ export default function BookActionButton({
     // direcciones) en vez de reconstruirla desde el id, para no "saltar" a
     // la URL con UUID después de loguearse.
     const bookRedirect = `${pathname || `/musicians/${musicianId}`}?reservar=1`;
-    const widthClass = fullWidth ? "w-full" : "w-full sm:w-auto";
+    const widthClass = fullWidth ? "w-full" : "";
 
     // Keep SSR and first client paint identical to avoid hydration mismatches.
     if (!isClient || isLoading) {
