@@ -407,9 +407,8 @@ function StickyCollapsingHorizontalTimeline({
             {
                 root: null,
                 threshold: 0,
-                // Agregamos un margen negativo superior equivalente a la altura del navbar
-                // para que el evento dispare justo cuando el card toca el navbar.
-                rootMargin: `calc(-1 * var(--app-navbar-height, 64px)) 0px 0px 0px`,
+                // intersection observer rootMargin no soporta calc() ni var(), debe ser px o %
+                rootMargin: "-64px 0px 0px 0px",
             },
         );
 
