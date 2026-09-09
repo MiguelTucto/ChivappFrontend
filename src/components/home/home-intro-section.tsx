@@ -71,15 +71,18 @@ export default function HomeIntroSection({ musicians, hasMoreMusicians = false }
                     aria-label="Descubre más hacia abajo"
                     className="group pointer-events-auto flex items-center justify-center"
                 >
-                    <span className="relative flex items-center justify-center size-9 sm:size-10">
-                        <span className="absolute inset-0 rounded-full bg-primary/30 animate-ping" />
-                        <span className="absolute inset-0 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors" />
-                        <Icon
-                            icon="material-symbols:keyboard-arrow-down-rounded"
-                            width={22}
-                            height={22}
-                            className="relative text-default-600 group-hover:text-primary transition-colors"
-                        />
+                    <span className="relative flex items-center justify-center size-10 sm:size-12">
+                        {/* Ping effect behind the button */}
+                        <span className="absolute inset-0 rounded-full bg-primary/40 animate-ping" />
+                        {/* Solid button */}
+                        <span className="relative flex items-center justify-center size-10 sm:size-12 rounded-full bg-content1/95 backdrop-blur-md shadow-elevated border border-default-200/60 group-hover:border-primary/50 transition-colors">
+                            <Icon
+                                icon="material-symbols:keyboard-arrow-down-rounded"
+                                width={24}
+                                height={24}
+                                className="text-foreground group-hover:text-primary transition-colors"
+                            />
+                        </span>
                     </span>
                 </button>
             </div>
