@@ -96,12 +96,14 @@ export default function LoginForm({
                             : "No se pudo completar el acceso social. Intenta de nuevo o ingresa con tu correo."}
                 </p>
             ) : null}
-            {/* <SocialAuthButtons intent="login" />
+            <SocialAuthButtons intent="login" />
             <div className="flex items-center gap-3">
                 <Divider className="flex-1" />
-                <span className="text-xs font-medium text-default-400">O con tu correo</span>
+                <span className="text-xs font-medium text-default-400 uppercase tracking-widest">
+                    O con correo
+                </span>
                 <Divider className="flex-1" />
-            </div> */}
+            </div>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <Input
                     label="Correo electrónico"
