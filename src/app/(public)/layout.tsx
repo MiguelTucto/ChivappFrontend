@@ -24,7 +24,7 @@ export default function PublicLayout({
                 className={
                     isFullBleed
                         ? "min-h-screen"
-                        : "pt-[var(--app-navbar-height)] min-h-[calc(100vh-var(--app-navbar-height))]"
+                        : "pt-[var(--app-navbar-height)] min-h-[calc(100dvh-var(--app-navbar-height))]"
                 }
             >
                 <EmailVerificationBanner

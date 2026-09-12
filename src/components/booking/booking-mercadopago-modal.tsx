@@ -328,7 +328,7 @@ export default function BookingMercadoPagoModal({
             scrollBehavior="inside"
             backdrop="blur"
             classNames={{
-                base: "mx-2 sm:mx-auto max-w-[calc(100vw-1rem)] sm:max-w-2xl max-h-[92vh]",
+                base: "mx-2 sm:mx-auto max-w-[calc(100vw-1rem)] sm:max-w-2xl max-h-[calc(100dvh-4rem)] sm:max-h-[92dvh]",
                 wrapper: "items-end sm:items-center",
             }}
         >

@@ -44,7 +44,7 @@ export default function AuthModal({
             scrollBehavior="inside"
             placement="center"
             classNames={{
-                base: "mx-2 sm:mx-auto max-w-[calc(100vw-1rem)] sm:max-w-lg rounded-3xl border border-default-200/60 shadow-2xl bg-content1 max-h-[92vh]",
+                base: "mx-2 sm:mx-auto max-w-[calc(100vw-1rem)] sm:max-w-lg rounded-3xl border border-default-200/60 shadow-2xl bg-content1 max-h-[calc(100dvh-4rem)] sm:max-h-[92dvh]",
                 wrapper: "items-end sm:items-center",
                 body: "px-4 sm:px-6 pb-6 pt-1",
                 header: "px-4 sm:px-6 pt-6 pb-2",

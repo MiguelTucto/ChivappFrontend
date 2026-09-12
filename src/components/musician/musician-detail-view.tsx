@@ -259,7 +259,7 @@ export default function MusicianDetailView({
     // Misma "píldora" flotante que el navbar (inset, rounded-full, blur),
     // reflejada en la barra inferior de precio/CTA.
     const ctaBarClassName = [
-        "inset-x-3 sm:inset-x-6 z-40 rounded-full border border-default-200/60 bg-content1/70 backdrop-blur-md shadow-elevated",
+        "inset-x-3 sm:inset-x-6 z-40 rounded-full border border-default-200/60 bg-content1/70 backdrop-blur-md shadow-elevated hide-on-keyboard",
         "transition-transform duration-300 ease-out",
         isCtaDocked ? "absolute bottom-3 sm:bottom-4" : "fixed bottom-3 sm:bottom-4",
         isCtaRevealed || isCtaDocked
